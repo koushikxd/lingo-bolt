@@ -22,7 +22,10 @@ const supportedLocales = [
 ] as const;
 
 const bodySchema = z.object({
-  text: z.string().transform((value) => value.trim()).pipe(z.string().min(1)),
+  text: z
+    .string()
+    .transform((value) => value.trim())
+    .pipe(z.string().min(1)),
   targetLocale: z.enum(supportedLocales),
 });
 

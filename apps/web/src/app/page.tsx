@@ -4,7 +4,8 @@ import { useCallback, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
-import { Check, ClipboardCopy, Globe, Languages } from "lucide-react";
+import JSZip from "jszip";
+import { Check, ClipboardCopy, Download, FileText, Globe, Languages } from "lucide-react";
 
 import { ModeToggle } from "@/components/mode-toggle";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 
 type AppState = "idle" | "indexing" | "indexed" | "generating" | "translating" | "done";
+type MdState = "idle" | "translating" | "done";
+type TranslatedFile = { path: string; content: string };
 
 const LANGUAGES = [
   { code: "en", label: "English" },
@@ -48,6 +51,11 @@ export default function Home() {
   const [docContent, setDocContent] = useState("");
   const [copied, setCopied] = useState(false);
   const docRef = useRef<HTMLDivElement>(null);
+
+  const [mdFiles, setMdFiles] = useState<string[]>([]);
+  const [mdLocale, setMdLocale] = useState("es");
+  const [mdState, setMdState] = useState<MdState>("idle");
+  const [mdTranslatedFiles, setMdTranslatedFiles] = useState<TranslatedFile[]>([]);
 
   const handleIndex = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,6 +92,17 @@ export default function Home() {
         setRepoName(data.repository?.name ?? trimmed.split("/").pop() ?? "");
         setState("indexed");
         toast.success("Repository indexed successfully");
+
+        if (data.repositoryId) {
+          fetch("/api/markdown/discover", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ repositoryId: data.repositoryId }),
+          })
+            .then((r) => r.json() as Promise<{ files?: string[] }>)
+            .then((d) => setMdFiles(d.files ?? []))
+            .catch(() => {});
+        }
       } catch {
         toast.error("Failed to index repository");
         setState("idle");
@@ -155,6 +174,49 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   }, [docContent]);
 
+  const handleMdTranslate = useCallback(async () => {
+    if (!repositoryId) return;
+    setMdState("translating");
+    setMdTranslatedFiles([]);
+
+    try {
+      const res = await fetch("/api/markdown/translate", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ repositoryId, targetLocale: mdLocale }),
+      });
+      const data = (await res.json()) as { files?: TranslatedFile[]; error?: string };
+
+      if (!res.ok || !data.files) {
+        toast.error(data.error ?? "Markdown translation failed");
+        setMdState("idle");
+        return;
+      }
+
+      setMdTranslatedFiles(data.files);
+      setMdState("done");
+      toast.success(`Translated ${data.files.length} markdown files`);
+    } catch {
+      toast.error("Markdown translation failed");
+      setMdState("idle");
+    }
+  }, [repositoryId, mdLocale]);
+
+  const handleDownloadZip = useCallback(async () => {
+    if (mdTranslatedFiles.length === 0) return;
+    const zip = new JSZip();
+    for (const file of mdTranslatedFiles) {
+      zip.file(file.path, file.content);
+    }
+    const blob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${repoName}-${mdLocale}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [mdTranslatedFiles, repoName, mdLocale]);
+
   const handleReset = useCallback(() => {
     setState("idle");
     setRepoUrl("");
@@ -163,6 +225,10 @@ export default function Home() {
     setChunksIndexed(0);
     setLocale("en");
     setDocContent("");
+    setMdFiles([]);
+    setMdLocale("es");
+    setMdState("idle");
+    setMdTranslatedFiles([]);
   }, []);
 
   return (
@@ -181,7 +247,8 @@ export default function Home() {
         <div className="mb-8 space-y-1">
           <h1 className="text-lg font-semibold tracking-tight">Onboarding Doc Generator</h1>
           <p className="text-xs text-muted-foreground">
-            Paste a GitHub repository URL, pick a language, and get onboarding docs instantly.
+            Paste a GitHub repository URL, generate onboarding docs, and batch translate markdown
+            files.
           </p>
         </div>
 
@@ -318,6 +385,72 @@ export default function Home() {
                 >
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{docContent}</ReactMarkdown>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {state !== "idle" && state !== "indexing" && mdFiles.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-1.5">
+                  <FileText className="size-3.5" />
+                  Markdown Translation
+                </CardTitle>
+                <CardDescription>
+                  {mdFiles.length} markdown {mdFiles.length === 1 ? "file" : "files"} found &mdash;
+                  batch translate and download as ZIP
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-3 flex flex-wrap gap-1.5">
+                  {mdFiles.map((f) => (
+                    <Badge key={f} variant="outline" className="font-mono text-[10px]">
+                      {f}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-end gap-2">
+                  <div className="space-y-1.5">
+                    <label htmlFor="md-language-select" className="text-xs font-medium">
+                      Target Language
+                    </label>
+                    <NativeSelect
+                      id="md-language-select"
+                      value={mdLocale}
+                      onChange={(e) => setMdLocale(e.target.value)}
+                      disabled={mdState === "translating"}
+                    >
+                      {LANGUAGES.filter((l) => l.code !== "en").map((lang) => (
+                        <NativeSelectOption key={lang.code} value={lang.code}>
+                          {lang.label}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                  {mdState === "done" ? (
+                    <Button onClick={handleDownloadZip}>
+                      <Download className="size-3.5" />
+                      Download ZIP
+                    </Button>
+                  ) : (
+                    <Button onClick={handleMdTranslate} disabled={mdState === "translating"}>
+                      {mdState === "translating" ? (
+                        <>
+                          <Spinner className="size-3.5" />
+                          Translating {mdFiles.length} {mdFiles.length === 1 ? "file" : "files"}
+                        </>
+                      ) : (
+                        "Translate & Download"
+                      )}
+                    </Button>
+                  )}
+                </div>
+                {mdState === "done" && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {mdTranslatedFiles.length} {mdTranslatedFiles.length === 1 ? "file" : "files"}{" "}
+                    translated to {LANGUAGES.find((l) => l.code === mdLocale)?.label ?? mdLocale}
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}

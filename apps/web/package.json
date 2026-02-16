@@ -34,6 +34,7 @@
     "dotenv": "catalog:",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "jszip": "^3.10.1",
     "lingo.dev": "^0.131.2",
     "lucide-react": "^0.546.0",
     "next": "catalog:",

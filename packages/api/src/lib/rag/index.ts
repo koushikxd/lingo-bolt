@@ -5,6 +5,7 @@ import {
   DEFAULT_COLLECTION_NAME,
   deleteVectors,
   deleteVectorsByRepository,
+  getMarkdownFilePaths,
   searchVectors,
   upsertVectors,
 } from "./vector-store";
@@ -141,4 +142,11 @@ export function extractVectorIds(items: Array<string | { id?: string }>) {
   return items
     .map((item) => (typeof item === "string" ? item : item.id))
     .filter((id): id is string => typeof id === "string" && id.length > 0);
+}
+
+export async function getRepositoryMarkdownFiles(
+  repositoryId: string,
+  collectionName = DEFAULT_COLLECTION_NAME,
+) {
+  return getMarkdownFilePaths(repositoryId, collectionName);
 }

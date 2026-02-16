@@ -185,3 +185,38 @@ export async function deleteVectorsByRepository(
     },
   });
 }
+
+export async function getMarkdownFilePaths(
+  repositoryId: string,
+  collectionName = DEFAULT_COLLECTION_NAME,
+): Promise<string[]> {
+  await ensureCollection(collectionName);
+  const client = getQdrantClient();
+  const paths = new Set<string>();
+  let offset: string | number | undefined = undefined;
+
+  for (;;) {
+    const result = await client.scroll(collectionName, {
+      filter: {
+        must: [
+          { key: "repositoryId", match: { value: repositoryId } },
+          { key: "type", match: { value: "markdown" } },
+        ],
+      },
+      limit: 100,
+      offset,
+      with_payload: { include: ["filePath"] },
+      with_vector: false,
+    });
+
+    for (const point of result.points) {
+      const payload = point.payload as { filePath?: string };
+      if (payload.filePath) paths.add(payload.filePath);
+    }
+
+    if (!result.next_page_offset) break;
+    offset = result.next_page_offset as string | number;
+  }
+
+  return [...paths].sort();
+}
