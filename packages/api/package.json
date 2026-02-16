@@ -1,0 +1,27 @@
+{
+  "name": "@lingo-dev/api",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@lingo-dev/auth": "workspace:*",
+    "@lingo-dev/db": "workspace:*",
+    "@lingo-dev/env": "workspace:*",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "dotenv": "catalog:",
+    "next": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@lingo-dev/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

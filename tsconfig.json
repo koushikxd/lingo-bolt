@@ -1,0 +1,3 @@
+{
+  "extends": "@lingo-dev/config/tsconfig.base.json"
+}

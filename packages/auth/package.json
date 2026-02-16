@@ -1,0 +1,24 @@
+{
+  "name": "@lingo-dev/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@lingo-dev/db": "workspace:*",
+    "@lingo-dev/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@lingo-dev/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

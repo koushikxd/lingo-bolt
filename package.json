@@ -1,0 +1,39 @@
+{
+  "name": "lingo-dev",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native dev",
+    "dev:web": "turbo -F web dev",
+    "db:push": "turbo -F @lingo-dev/db db:push",
+    "db:studio": "turbo -F @lingo-dev/db db:studio",
+    "db:generate": "turbo -F @lingo-dev/db db:generate",
+    "db:migrate": "turbo -F @lingo-dev/db db:migrate",
+    "db:start": "turbo -F @lingo-dev/db db:start",
+    "db:watch": "turbo -F @lingo-dev/db db:watch",
+    "db:stop": "turbo -F @lingo-dev/db db:stop",
+    "db:down": "turbo -F @lingo-dev/db db:down",
+    "check": "oxlint && oxfmt --write"
+  },
+  "dependencies": {
+    "@lingo-dev/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@lingo-dev/config": "workspace:*",
+    "@types/node": "^22.13.14",
+    "oxfmt": "^0.26.0",
+    "oxlint": "^1.41.0",
+    "turbo": "^2.6.3",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.6.5"
+}
