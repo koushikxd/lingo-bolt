@@ -42,7 +42,7 @@ Then, run the development server:
 pnpm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the fullstack application.
 
 ## Git Hooks and Formatting
 
