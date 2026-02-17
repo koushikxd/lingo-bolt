@@ -4,10 +4,8 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { ZodError, z } from "zod";
 
-import {
-  fetchGitHubRepositoryMetadata,
-  parseGitHubRepositoryUrl,
-} from "@/lib/github";
+import { fetchGitHubRepositoryMetadata, parseGitHubRepositoryUrl } from "@/lib/github";
+import { generateOnboardingDoc } from "@/lib/generate-onboarding";
 
 const bodySchema = z.object({
   repoUrl: z.string().url(),
@@ -51,6 +49,8 @@ export async function POST(req: Request) {
       userId: session.user.id,
       accessToken,
     });
+
+    void generateOnboardingDoc(indexed.repository.id).catch(() => {});
 
     return NextResponse.json({
       success: true,

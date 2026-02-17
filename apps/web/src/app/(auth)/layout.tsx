@@ -1,10 +1,6 @@
 import { Globe } from "lucide-react";
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center px-4">
       <div className="mb-8 flex items-center gap-2">

@@ -46,14 +46,10 @@ export type VectorSearchResult = {
 async function collectionExists(collectionName: string) {
   const client = getQdrantClient();
   const collections = await client.getCollections();
-  return collections.collections.some(
-    (collection) => collection.name === collectionName,
-  );
+  return collections.collections.some((collection) => collection.name === collectionName);
 }
 
-export async function ensureCollection(
-  collectionName = DEFAULT_COLLECTION_NAME,
-) {
+export async function ensureCollection(collectionName = DEFAULT_COLLECTION_NAME) {
   const client = getQdrantClient();
   const exists = await collectionExists(collectionName);
 
@@ -109,9 +105,7 @@ export async function upsertVectors(
   return normalized.map((point) => point.id);
 }
 
-export async function searchVectors(
-  input: SearchInput,
-): Promise<VectorSearchResult[]> {
+export async function searchVectors(input: SearchInput): Promise<VectorSearchResult[]> {
   const {
     collectionName = DEFAULT_COLLECTION_NAME,
     embedding,
@@ -152,12 +146,7 @@ export async function searchVectors(
   });
 
   return results
-    .filter(
-      (item) =>
-        typeof item.id === "string" &&
-        item.payload &&
-        typeof item.score === "number",
-    )
+    .filter((item) => typeof item.id === "string" && item.payload && typeof item.score === "number")
     .map((item) => ({
       id: item.id as string,
       score: item.score,
@@ -165,10 +154,7 @@ export async function searchVectors(
     }));
 }
 
-export async function deleteVectors(
-  vectorIds: string[],
-  collectionName = DEFAULT_COLLECTION_NAME,
-) {
+export async function deleteVectors(vectorIds: string[], collectionName = DEFAULT_COLLECTION_NAME) {
   if (vectorIds.length === 0) {
     return;
   }
@@ -233,4 +219,45 @@ export async function getMarkdownFilePaths(
   }
 
   return [...paths].sort();
+}
+
+export async function getFileChunks(
+  repositoryId: string,
+  filePath: string,
+  collectionName = DEFAULT_COLLECTION_NAME,
+): Promise<{ content: string; chunkIndex: number }[]> {
+  await ensureCollection(collectionName);
+  const client = getQdrantClient();
+  const chunks: { content: string; chunkIndex: number }[] = [];
+  let offset: string | number | undefined = undefined;
+
+  for (;;) {
+    const result = await client.scroll(collectionName, {
+      filter: {
+        must: [
+          { key: "repositoryId", match: { value: repositoryId } },
+          { key: "filePath", match: { value: filePath } },
+        ],
+      },
+      limit: 100,
+      offset,
+      with_payload: { include: ["content", "chunkIndex"] },
+      with_vector: false,
+    });
+
+    for (const point of result.points) {
+      const payload = point.payload as { content?: string; chunkIndex?: number };
+      if (payload.content) {
+        chunks.push({
+          content: payload.content,
+          chunkIndex: payload.chunkIndex ?? 0,
+        });
+      }
+    }
+
+    if (!result.next_page_offset) break;
+    offset = result.next_page_offset as string | number;
+  }
+
+  return chunks.sort((a, b) => a.chunkIndex - b.chunkIndex);
 }

@@ -6,13 +6,7 @@ import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function LoginPage() {
@@ -34,16 +28,10 @@ export default function LoginPage() {
     <Card>
       <CardHeader>
         <CardTitle>Welcome</CardTitle>
-        <CardDescription>
-          Sign in with your GitHub account to get started
-        </CardDescription>
+        <CardDescription>Sign in with your GitHub account to get started</CardDescription>
       </CardHeader>
       <CardContent>
-        <Button
-          className="w-full"
-          disabled={loading}
-          onClick={handleGitHubSignIn}
-        >
+        <Button className="w-full" disabled={loading} onClick={handleGitHubSignIn}>
           {loading ? (
             <>
               <Spinner className="size-3.5" />

@@ -12,12 +12,32 @@ import { z } from "zod";
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".mdx", ".markdown"]);
 const IGNORED_DIRECTORIES = new Set([
-  ".git", "node_modules", ".next", "dist", "build", "coverage", ".turbo", ".vercel",
+  ".git",
+  "node_modules",
+  ".next",
+  "dist",
+  "build",
+  "coverage",
+  ".turbo",
+  ".vercel",
 ]);
 
 const supportedLocales = [
-  "en", "es", "fr", "de", "pt-BR", "zh-CN", "ja", "ko",
-  "hi", "ar", "ru", "it", "nl", "tr", "pl",
+  "en",
+  "es",
+  "fr",
+  "de",
+  "pt-BR",
+  "zh-CN",
+  "ja",
+  "ko",
+  "hi",
+  "ar",
+  "ru",
+  "it",
+  "nl",
+  "tr",
+  "pl",
 ] as const;
 
 const bodySchema = z.object({
@@ -27,10 +47,7 @@ const bodySchema = z.object({
 
 const engine = new LingoDotDevEngine({ apiKey: env.LINGODOTDEV_API_KEY });
 
-async function findMarkdownFiles(
-  rootPath: string,
-  currentPath = rootPath,
-): Promise<string[]> {
+async function findMarkdownFiles(rootPath: string, currentPath = rootPath): Promise<string[]> {
   const entries = await fs.readdir(currentPath, { withFileTypes: true });
   const files: string[] = [];
 
@@ -43,10 +60,7 @@ async function findMarkdownFiles(
 
     if (entry.isDirectory()) {
       files.push(...(await findMarkdownFiles(rootPath, fullPath)));
-    } else if (
-      entry.isFile() &&
-      MARKDOWN_EXTENSIONS.has(path.extname(entry.name).toLowerCase())
-    ) {
+    } else if (entry.isFile() && MARKDOWN_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
       files.push(fullPath);
     }
   }

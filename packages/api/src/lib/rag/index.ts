@@ -5,6 +5,7 @@ import {
   DEFAULT_COLLECTION_NAME,
   deleteVectors,
   deleteVectorsByRepository,
+  getFileChunks,
   getMarkdownFilePaths,
   searchVectors,
   upsertVectors,
@@ -39,12 +40,7 @@ export type SearchResult = {
 };
 
 export async function indexRepository(input: IndexRepositoryInput) {
-  const {
-    repoPath,
-    repositoryId,
-    repositoryUrl,
-    collectionName = DEFAULT_COLLECTION_NAME,
-  } = input;
+  const { repoPath, repositoryId, repositoryUrl, collectionName = DEFAULT_COLLECTION_NAME } = input;
 
   console.log(`[RAG] chunking repository ${repositoryId}`);
   const chunks = await chunkRepositoryFiles({
@@ -76,9 +72,7 @@ export async function indexRepository(input: IndexRepositoryInput) {
   return vectorIds;
 }
 
-export async function queryRepository(
-  input: QueryRepositoryInput,
-): Promise<SearchResult> {
+export async function queryRepository(input: QueryRepositoryInput): Promise<SearchResult> {
   const {
     query,
     repositoryId,
@@ -156,4 +150,13 @@ export async function getRepositoryMarkdownFiles(
   collectionName = DEFAULT_COLLECTION_NAME,
 ) {
   return getMarkdownFilePaths(repositoryId, collectionName);
+}
+
+export async function getRepositoryFileContent(
+  repositoryId: string,
+  filePath: string,
+  collectionName = DEFAULT_COLLECTION_NAME,
+) {
+  const chunks = await getFileChunks(repositoryId, filePath, collectionName);
+  return chunks.map((c) => c.content).join("\n");
 }

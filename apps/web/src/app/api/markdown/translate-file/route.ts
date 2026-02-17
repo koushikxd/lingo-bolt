@@ -1,4 +1,6 @@
+import { getRepositoryFileContent } from "@lingo-dev/api/lib/rag/index";
 import { auth } from "@lingo-dev/auth";
+import prisma from "@lingo-dev/db";
 import { env } from "@lingo-dev/env/server";
 import { LingoDotDevEngine } from "lingo.dev/sdk";
 import { headers } from "next/headers";
@@ -24,10 +26,8 @@ const supportedLocales = [
 ] as const;
 
 const bodySchema = z.object({
-  text: z
-    .string()
-    .transform((v) => v.trim())
-    .pipe(z.string().min(1)),
+  repositoryId: z.string().min(1),
+  filePath: z.string().min(1),
   targetLocale: z.enum(supportedLocales),
 });
 
@@ -42,16 +42,35 @@ export async function POST(req: Request) {
 
     const body = bodySchema.parse(await req.json());
 
-    const translatedText = await engine.localizeText(body.text, {
-      sourceLocale: "en",
-      targetLocale: body.targetLocale,
+    const repository = await prisma.repository.findFirst({
+      where: { id: body.repositoryId, userId: session.user.id },
     });
 
-    return NextResponse.json({ translatedText });
+    if (!repository) {
+      return NextResponse.json({ error: "Repository not found" }, { status: 404 });
+    }
+
+    const content = await getRepositoryFileContent(repository.id, body.filePath);
+    if (!content.trim()) {
+      return NextResponse.json({ error: "File is empty" }, { status: 422 });
+    }
+
+    const translated = await engine.localizeText(content, {
+      sourceLocale: "en",
+      targetLocale: body.targetLocale,
+      fast: true,
+    });
+
+    return NextResponse.json({
+      filePath: body.filePath,
+      locale: body.targetLocale,
+      original: content,
+      translated,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid request. Provide text and targetLocale." },
+        { error: "Invalid request. Provide repositoryId, filePath, and targetLocale." },
         { status: 400 },
       );
     }
