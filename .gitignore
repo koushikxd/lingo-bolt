@@ -49,3 +49,6 @@ coverage
 tmp
 temp
 /apps/web/.tmp
+
+*.pem
+secrets/

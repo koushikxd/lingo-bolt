@@ -32,9 +32,7 @@ import {
 export default function DashboardPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: repos, isLoading } = useQuery(
-    trpc.repository.list.queryOptions(),
-  );
+  const { data: repos, isLoading } = useQuery(trpc.repository.list.queryOptions());
   const [deleteTarget, setDeleteTarget] = useState<{
     id: string;
     owner: string;
@@ -66,17 +64,10 @@ export default function DashboardPage() {
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between pt-6">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-pretty">
-            Repositories
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Your indexed repositories
-          </p>
+          <h1 className="text-lg font-semibold tracking-tight text-pretty">Repositories</h1>
+          <p className="text-xs text-muted-foreground">Your indexed repositories</p>
         </div>
-        <Link
-          href={"/repo/new" as never}
-          className={buttonVariants({ size: "sm" })}
-        >
+        <Link href={"/repo/new" as never} className={buttonVariants({ size: "sm" })}>
           <Plus className="size-3.5" aria-hidden="true" />
           Index Repo
         </Link>
@@ -96,13 +87,8 @@ export default function DashboardPage() {
         </div>
       ) : !repos || repos.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-4 border border-dashed border-border py-16">
-          <p className="text-sm text-muted-foreground">
-            No repositories indexed yet
-          </p>
-          <Link
-            href={"/repo/new" as never}
-            className={buttonVariants({ size: "sm" })}
-          >
+          <p className="text-sm text-muted-foreground">No repositories indexed yet</p>
+          <Link href={"/repo/new" as never} className={buttonVariants({ size: "sm" })}>
             <Plus className="size-3.5" aria-hidden="true" />
             Index Your First Repo
           </Link>
@@ -121,9 +107,7 @@ export default function DashboardPage() {
                       {repo.owner}/{repo.name}
                     </span>
                     <Badge
-                      variant={
-                        repo.status === "indexed" ? "default" : "outline"
-                      }
+                      variant={repo.status === "indexed" ? "default" : "outline"}
                       className="text-[10px]"
                     >
                       {repo.status}
@@ -137,10 +121,7 @@ export default function DashboardPage() {
                   <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                     {repo.language ? (
                       <span className="flex items-center gap-1">
-                        <span
-                          className="size-2 bg-primary"
-                          aria-hidden="true"
-                        />
+                        <span className="size-2 bg-primary" aria-hidden="true" />
                         {repo.language}
                       </span>
                     ) : null}
@@ -156,9 +137,7 @@ export default function DashboardPage() {
                 </Link>
               </ContextMenuTrigger>
               <ContextMenuContent>
-                <ContextMenuItem
-                  onClick={() => router.push(`/repo/${repo.id}` as never)}
-                >
+                <ContextMenuItem onClick={() => router.push(`/repo/${repo.id}` as never)}>
                   <ExternalLink className="size-3.5" aria-hidden="true" />
                   Open
                 </ContextMenuItem>
@@ -192,9 +171,8 @@ export default function DashboardPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete repository?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove {deleteTarget?.owner}/{deleteTarget?.name} and
-              all its indexed data, onboarding docs, and translations. This
-              action cannot be undone.
+              This will remove {deleteTarget?.owner}/{deleteTarget?.name} and all its indexed data,
+              onboarding docs, and translations. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

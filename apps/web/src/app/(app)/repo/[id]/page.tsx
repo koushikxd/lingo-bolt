@@ -9,15 +9,9 @@ import { trpc } from "@/utils/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function RepoDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function RepoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { data: repo, isLoading } = useQuery(
-    trpc.repository.getById.queryOptions({ id }),
-  );
+  const { data: repo, isLoading } = useQuery(trpc.repository.getById.queryOptions({ id }));
 
   if (isLoading) {
     return (
@@ -36,11 +30,7 @@ export default function RepoDetailPage({
   }
 
   if (!repo) {
-    return (
-      <p className="py-12 text-center text-sm text-muted-foreground">
-        Repository not found
-      </p>
-    );
+    return <p className="py-12 text-center text-sm text-muted-foreground">Repository not found</p>;
   }
 
   return (
@@ -50,9 +40,7 @@ export default function RepoDetailPage({
           {repo.owner}/{repo.name}
         </h1>
         {repo.description ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            {repo.description}
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{repo.description}</p>
         ) : null}
         <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
           <Badge

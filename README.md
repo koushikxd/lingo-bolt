@@ -12,6 +12,37 @@ You connect your GitHub account, index a repository into a vector database, gene
 - Save onboarding docs in multiple locales
 - Translate markdown files using lingo.dev
 - Manage indexed repositories and related generated content
+- GitHub bot (lingo-bolt) for in-repo translation, summarization, and auto-labeling
+
+## lingo-bolt bot
+
+Install the GitHub App on your account or organization repos. Once installed, the bot responds to mentions in issues and pull requests.
+
+### Commands
+
+```
+@lingo-bolt translate to spanish
+```
+Translates the issue or PR body into the target language and posts a reply.
+
+```
+@lingo-bolt summarize
+```
+Summarizes the issue or PR in the maintainer's default language (set in the bot dashboard).
+
+```
+@lingo-bolt summarize in french
+```
+Summarizes in a specific language.
+
+### Automatic features
+
+- **Auto-label** — detects the language of new issues and adds a label like `lang:chinese` or `lang:english`
+- **Auto-translate** — when enabled, automatically translates new issues and comments into the maintainer's default language
+
+### Bot dashboard
+
+Go to `/bot` in the app to manage installations, set your default language, and toggle auto-translate and auto-label per installation.
 
 ## Tech stack
 
@@ -58,6 +89,8 @@ Set these before running the app:
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
 - `GITHUB_TOKEN` (optional)
+- `GITHUB_APP_ID`
+- `GITHUB_WEBHOOK_SECRET`
 - `LINGODOTDEV_API_KEY`
 - `NODE_ENV`
 

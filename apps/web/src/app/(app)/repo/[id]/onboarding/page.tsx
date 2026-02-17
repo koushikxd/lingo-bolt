@@ -29,12 +29,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,11 +41,7 @@ const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 type GenerateState = "idle" | "generating" | "translating" | "done";
 
-export default function OnboardingPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function OnboardingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const queryClient = useQueryClient();
 
@@ -79,9 +70,7 @@ export default function OnboardingPage({
     : null;
 
   const displayContent =
-    state !== "idle"
-      ? streamContent
-      : (selectedDoc?.content ?? latestDoc?.content ?? "");
+    state !== "idle" ? streamContent : (selectedDoc?.content ?? latestDoc?.content ?? "");
   const displayLocale = selectedDoc?.locale ?? latestDoc?.locale ?? "en";
   const hasNoDocs = repo && repo.onboardingDocs.length === 0;
 
@@ -217,17 +206,13 @@ export default function OnboardingPage({
                   })}
                 >
                   <span className="text-xs">
-                    {LANGUAGES.find(
-                      (l) =>
-                        l.code === (selectedDoc?.locale ?? latestDoc?.locale),
-                    )?.label ?? "English"}
+                    {LANGUAGES.find((l) => l.code === (selectedDoc?.locale ?? latestDoc?.locale))
+                      ?.label ?? "English"}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
                     v
                     {selectedDocId
-                      ? repo.onboardingDocs.findIndex(
-                          (d) => d.id === selectedDocId,
-                        ) + 1
+                      ? repo.onboardingDocs.findIndex((d) => d.id === selectedDocId) + 1
                       : repo.onboardingDocs.length}
                   </span>
                   <ChevronDown className="size-3 opacity-50" />
@@ -245,8 +230,7 @@ export default function OnboardingPage({
                     >
                       <div className="flex items-center gap-2 w-full justify-between">
                         <span className="font-medium">
-                          {LANGUAGES.find((l) => l.code === doc.locale)
-                            ?.label ?? doc.locale}
+                          {LANGUAGES.find((l) => l.code === doc.locale)?.label ?? doc.locale}
                         </span>
                         {doc.id === (selectedDocId ?? latestDoc?.id) && (
                           <Check className="size-3" />
@@ -277,9 +261,7 @@ export default function OnboardingPage({
                 <DropdownMenuContent align="end" className="w-64 p-3">
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <h4 className="text-xs font-medium leading-none">
-                        New Version
-                      </h4>
+                      <h4 className="text-xs font-medium leading-none">New Version</h4>
                       <p className="text-[10px] text-muted-foreground">
                         Generate a fresh guide in a specific language.
                       </p>
@@ -288,20 +270,14 @@ export default function OnboardingPage({
                       <Select
                         value={locale}
                         onValueChange={(val) => val && setLocale(val)}
-                        disabled={
-                          state === "generating" || state === "translating"
-                        }
+                        disabled={state === "generating" || state === "translating"}
                       >
                         <SelectTrigger className="h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {LANGUAGES.map((lang) => (
-                            <SelectItem
-                              key={lang.code}
-                              value={lang.code}
-                              className="text-xs"
-                            >
+                            <SelectItem key={lang.code} value={lang.code} className="text-xs">
                               {lang.label}
                             </SelectItem>
                           ))}
@@ -311,19 +287,15 @@ export default function OnboardingPage({
                         size="sm"
                         className="w-full h-7 text-xs"
                         onClick={handleRegenerate}
-                        disabled={
-                          state === "generating" || state === "translating"
-                        }
+                        disabled={state === "generating" || state === "translating"}
                       >
                         {state === "generating" ? (
                           <>
-                            <Loader2 className="mr-2 size-3 animate-spin" />{" "}
-                            Generating...
+                            <Loader2 className="mr-2 size-3 animate-spin" /> Generating...
                           </>
                         ) : state === "translating" ? (
                           <>
-                            <Loader2 className="mr-2 size-3 animate-spin" />{" "}
-                            Translating...
+                            <Loader2 className="mr-2 size-3 animate-spin" /> Translating...
                           </>
                         ) : (
                           <>
@@ -369,48 +341,33 @@ export default function OnboardingPage({
                 <Sparkles className="size-6 text-primary" />
               </div>
               <div className="space-y-2 max-w-sm">
-                <h3 className="text-base font-semibold">
-                  No onboarding docs yet
-                </h3>
+                <h3 className="text-base font-semibold">No onboarding docs yet</h3>
                 <p className="text-sm text-muted-foreground">
-                  Generate comprehensive onboarding documentation for your
-                  repository automatically using AI.
+                  Generate comprehensive onboarding documentation for your repository automatically
+                  using AI.
                 </p>
               </div>
               <div className="flex items-center gap-2 w-full max-w-xs">
-                <Select
-                  value={locale}
-                  onValueChange={(val) => val && setLocale(val)}
-                >
+                <Select value={locale} onValueChange={(val) => val && setLocale(val)}>
                   <SelectTrigger className="h-9 text-xs flex-1 bg-background">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {LANGUAGES.map((lang) => (
-                      <SelectItem
-                        key={lang.code}
-                        value={lang.code}
-                        className="text-xs"
-                      >
+                      <SelectItem key={lang.code} value={lang.code} className="text-xs">
                         {lang.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Button
-                  size="sm"
-                  onClick={handleRegenerate}
-                  className="h-9 px-4 text-xs"
-                >
+                <Button size="sm" onClick={handleRegenerate} className="h-9 px-4 text-xs">
                   Generate
                 </Button>
               </div>
             </div>
           ) : (
             <article ref={docRef} className={PROSE_CLASSES}>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {displayContent}
-              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
             </article>
           )}
         </div>

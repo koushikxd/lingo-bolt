@@ -20,11 +20,7 @@ import {
 } from "lucide-react";
 
 import { trpc } from "@/utils/trpc";
-import {
-  PROSE_CLASSES,
-  TRANSLATION_LANGUAGES,
-  LANGUAGES,
-} from "@/lib/constants";
+import { PROSE_CLASSES, TRANSLATION_LANGUAGES, LANGUAGES } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,27 +53,18 @@ const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 type TranslatedFile = { path: string; content: string };
 
-export default function MarkdownPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function MarkdownPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: repo, isLoading } = useQuery(
-    trpc.repository.getById.queryOptions({ id }),
-  );
+  const { data: repo, isLoading } = useQuery(trpc.repository.getById.queryOptions({ id }));
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [locale, setLocale] = useState("es");
-  const [viewMode, setViewMode] = useState<"original" | "translated">(
-    "original",
-  );
+  const [viewMode, setViewMode] = useState<"original" | "translated">("original");
 
-  const isIndexed =
-    repo?.status === "indexed" && (repo?.chunksIndexed ?? 0) > 0;
+  const isIndexed = repo?.status === "indexed" && (repo?.chunksIndexed ?? 0) > 0;
 
   const { data: mdFiles = [], isLoading: loadingFiles } = useQuery({
     queryKey: [id, "md-files"],
@@ -93,9 +80,7 @@ export default function MarkdownPage({
     enabled: isIndexed,
   });
 
-  const filteredFiles = mdFiles.filter((f) =>
-    f.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredFiles = mdFiles.filter((f) => f.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const { data: fileContent = "", isLoading: loadingContent } = useQuery({
     queryKey: [id, "md-content", selectedFile],
@@ -106,8 +91,7 @@ export default function MarkdownPage({
         body: JSON.stringify({ repositoryId: id, filePath: selectedFile }),
       });
       const data = (await res.json()) as { content?: string; error?: string };
-      if (!res.ok || !data.content)
-        throw new Error(data.error ?? "Failed to load file");
+      if (!res.ok || !data.content) throw new Error(data.error ?? "Failed to load file");
       return data.content;
     },
     enabled: !!selectedFile,
@@ -128,8 +112,7 @@ export default function MarkdownPage({
         translated?: string;
         error?: string;
       };
-      if (!res.ok || !data.translated)
-        throw new Error(data.error ?? "Translation failed");
+      if (!res.ok || !data.translated) throw new Error(data.error ?? "Translation failed");
       return data.translated;
     },
     onSuccess: () => {
@@ -152,8 +135,7 @@ export default function MarkdownPage({
         files?: TranslatedFile[];
         error?: string;
       };
-      if (!res.ok || !data.files)
-        throw new Error(data.error ?? "Batch translation failed");
+      if (!res.ok || !data.files) throw new Error(data.error ?? "Batch translation failed");
       return data.files;
     },
     onSuccess: (files) => {
@@ -173,18 +155,15 @@ export default function MarkdownPage({
     setViewMode("original");
   };
 
-  const handleDownloadFile = useCallback(
-    (content: string, filename: string) => {
-      const blob = new Blob([content], { type: "text/markdown" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    },
-    [],
-  );
+  const handleDownloadFile = useCallback((content: string, filename: string) => {
+    const blob = new Blob([content], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
 
   const handleDownloadZip = useCallback(
     async (files: TranslatedFile[], translationLocale: string) => {
@@ -230,10 +209,7 @@ export default function MarkdownPage({
       <div className="flex w-64 flex-col border-r bg-card/50">
         <div className="flex h-14 items-center border-b px-4">
           <span className="text-sm font-semibold">Files</span>
-          <Badge
-            variant="secondary"
-            className="ml-auto text-[10px] font-normal"
-          >
+          <Badge variant="secondary" className="ml-auto text-[10px] font-normal">
             {mdFiles.length}
           </Badge>
         </div>
@@ -283,20 +259,13 @@ export default function MarkdownPage({
               <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                 Target Language
               </label>
-              <Select
-                value={locale}
-                onValueChange={(val) => val && setLocale(val)}
-              >
+              <Select value={locale} onValueChange={(val) => val && setLocale(val)}>
                 <SelectTrigger className="h-8 text-xs w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {TRANSLATION_LANGUAGES.map((lang) => (
-                    <SelectItem
-                      key={lang.code}
-                      value={lang.code}
-                      className="text-xs"
-                    >
+                    <SelectItem key={lang.code} value={lang.code} className="text-xs">
                       {lang.label}
                     </SelectItem>
                   ))}
@@ -387,10 +356,7 @@ export default function MarkdownPage({
                       disabled={!translatedContent}
                       onClick={() => {
                         const name = selectedFile.split("/").pop() ?? "file.md";
-                        handleDownloadFile(
-                          translatedContent,
-                          `${locale}-${name}`,
-                        );
+                        handleDownloadFile(translatedContent, `${locale}-${name}`);
                       }}
                     >
                       Download Translated
@@ -429,9 +395,7 @@ export default function MarkdownPage({
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle>Translation History</SheetTitle>
-                  <SheetDescription>
-                    Access previous batch translations.
-                  </SheetDescription>
+                  <SheetDescription>Access previous batch translations.</SheetDescription>
                 </SheetHeader>
                 <div className="mt-6 space-y-4">
                   {repo.markdownTranslations.length === 0 ? (
@@ -446,8 +410,7 @@ export default function MarkdownPage({
                       >
                         <div className="flex items-center justify-between">
                           <Badge variant="outline" className="font-normal">
-                            {LANGUAGES.find((l) => l.code === t.locale)
-                              ?.label ?? t.locale}
+                            {LANGUAGES.find((l) => l.code === t.locale)?.label ?? t.locale}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             {new Date(t.createdAt).toLocaleDateString()}
@@ -461,9 +424,7 @@ export default function MarkdownPage({
                             variant="ghost"
                             size="sm"
                             className="h-7 px-2 -mr-2"
-                            onClick={() =>
-                              handleDownloadZip(t.files as any[], t.locale)
-                            }
+                            onClick={() => handleDownloadZip(t.files as any[], t.locale)}
                           >
                             <Download className="mr-2 size-3" />
                             ZIP
@@ -484,9 +445,7 @@ export default function MarkdownPage({
               <div className="bg-muted p-4 border border-border">
                 <FileText className="size-8 opacity-60" />
               </div>
-              <p className="text-sm font-medium">
-                Select a file to view content
-              </p>
+              <p className="text-sm font-medium">Select a file to view content</p>
             </div>
           ) : loadingContent ? (
             <div className="flex h-full items-center justify-center">

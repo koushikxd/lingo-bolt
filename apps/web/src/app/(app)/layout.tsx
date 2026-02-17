@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronsUpDown, Globe, LogOut, Plus } from "lucide-react";
+import { Bot, ChevronsUpDown, Globe, LogOut, Plus } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/utils/trpc";
@@ -52,6 +52,10 @@ function buildBreadcrumbs(
 
   if (pathname === "/") return crumbs;
 
+  if (pathname === "/bot") {
+    return [{ label: "Bot Management" }];
+  }
+
   if (pathname === "/repo/new") {
     crumbs.push({ label: "Index New" });
     return crumbs;
@@ -77,9 +81,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
-  const { data: repos, isLoading: loadingRepos } = useQuery(
-    trpc.repository.list.queryOptions(),
-  );
+  const { data: repos, isLoading: loadingRepos } = useQuery(trpc.repository.list.queryOptions());
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -89,9 +91,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const repoIdMatch = pathname.match(/^\/repo\/([^/]+)/);
   const activeRepoId = repoIdMatch?.[1] !== "new" ? repoIdMatch?.[1] : null;
-  const activeRepo = activeRepoId
-    ? repos?.find((r) => r.id === activeRepoId)
-    : null;
+  const activeRepo = activeRepoId ? repos?.find((r) => r.id === activeRepoId) : null;
   const breadcrumbs = buildBreadcrumbs(pathname, activeRepo);
 
   return (
@@ -104,9 +104,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
                   <Globe className="size-3.5" aria-hidden="true" />
                 </div>
-                <span className="text-sm font-semibold tracking-tight">
-                  lingo-dev
-                </span>
+                <span className="text-sm font-semibold tracking-tight">lingo-dev</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -114,10 +112,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Repositories</SidebarGroupLabel>
-            <SidebarGroupAction
-              render={<Link href={"/repo/new" as never} />}
-              title="Index New"
-            >
+            <SidebarGroupAction render={<Link href={"/repo/new" as never} />} title="Index New">
               <Plus aria-hidden="true" />
             </SidebarGroupAction>
             <SidebarGroupContent>
@@ -143,10 +138,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                   ))
                 ) : (
-                  <p className="px-2 py-1.5 text-xs text-muted-foreground">
-                    No repos yet
-                  </p>
+                  <p className="px-2 py-1.5 text-xs text-muted-foreground">No repos yet</p>
                 )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>Bot</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    className="hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground/70"
+                    isActive={pathname === "/bot"}
+                    render={<Link href={"/bot" as never} />}
+                  >
+                    <Bot className="size-3.5" aria-hidden="true" />
+                    <span>Manage Bot</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -165,33 +175,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     }
                   >
                     <Avatar size="sm">
-                      <AvatarImage
-                        src={session.user.image ?? undefined}
-                        alt={session.user.name}
-                      />
+                      <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
                       <AvatarFallback className="text-[10px]">
                         {session.user.name?.charAt(0).toUpperCase() ?? "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate text-xs font-medium">
-                        {session.user.name}
-                      </span>
+                      <span className="truncate text-xs font-medium">{session.user.name}</span>
                       <span className="truncate text-[10px] text-muted-foreground">
                         {session.user.email}
                       </span>
                     </div>
-                    <ChevronsUpDown
-                      className="ml-auto size-4"
-                      aria-hidden="true"
-                    />
+                    <ChevronsUpDown className="ml-auto size-4" aria-hidden="true" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="w-56"
-                    side="top"
-                    align="end"
-                    sideOffset={4}
-                  >
+                  <DropdownMenuContent className="w-56" side="top" align="end" sideOffset={4}>
                     <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
                       <Avatar size="sm">
                         <AvatarImage
@@ -203,9 +200,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate text-xs font-medium">
-                          {session.user.name}
-                        </span>
+                        <span className="truncate text-xs font-medium">{session.user.name}</span>
                         <span className="truncate text-[10px] text-muted-foreground">
                           {session.user.email}
                         </span>
@@ -237,9 +232,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     {isLast || !crumb.href ? (
                       <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink
-                        render={<Link href={crumb.href as never} />}
-                      >
+                      <BreadcrumbLink render={<Link href={crumb.href as never} />}>
                         {crumb.label}
                       </BreadcrumbLink>
                     )}

@@ -17,6 +17,7 @@
     "@lingo-dev/auth": "workspace:*",
     "@lingo-dev/db": "workspace:^",
     "@lingo-dev/env": "workspace:*",
+    "@octokit/app": "^16.1.2",
     "@octokit/rest": "^22.0.1",
     "@prisma/client": "catalog:",
     "@tanstack/react-form": "^1.28.0",

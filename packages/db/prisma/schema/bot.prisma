@@ -1,0 +1,11 @@
+model BotInstallation {
+  id              String   @id @default(cuid())
+  installationId  Int      @unique
+  accountLogin    String
+  accountType     String
+  defaultLanguage String   @default("en")
+  autoTranslate   Boolean  @default(false)
+  autoLabel       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

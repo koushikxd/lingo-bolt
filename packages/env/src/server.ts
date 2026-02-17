@@ -14,6 +14,8 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: z.string().min(1),
     GITHUB_CLIENT_SECRET: z.string().min(1),
     GITHUB_TOKEN: z.string().min(1).optional(),
+    GITHUB_APP_ID: z.string().min(1),
+    GITHUB_WEBHOOK_SECRET: z.string().min(1),
     LINGODOTDEV_API_KEY: z.string().min(1),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   },
