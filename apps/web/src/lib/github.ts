@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/rest";
-import { env } from "@lingo-dev/env/server";
 
 export type ParsedGitHubRepository = {
   owner: string;
@@ -17,9 +16,9 @@ export type GitHubRepositoryMetadata = {
   defaultBranch: string;
 };
 
-const octokit = new Octokit({
-  auth: env.GITHUB_TOKEN,
-});
+export function createOctokit(token: string) {
+  return new Octokit({ auth: token });
+}
 
 export function parseGitHubRepositoryUrl(input: string): ParsedGitHubRepository | null {
   let url: URL;
@@ -56,7 +55,9 @@ export function parseGitHubRepositoryUrl(input: string): ParsedGitHubRepository 
 
 export async function fetchGitHubRepositoryMetadata(
   input: ParsedGitHubRepository,
+  token: string,
 ): Promise<GitHubRepositoryMetadata> {
+  const octokit = createOctokit(token);
   const response = await octokit.repos.get({
     owner: input.owner,
     repo: input.repo,
@@ -71,4 +72,25 @@ export async function fetchGitHubRepositoryMetadata(
     language: response.data.language ?? null,
     defaultBranch: response.data.default_branch,
   };
+}
+
+export async function listUserRepos(token: string) {
+  const octokit = createOctokit(token);
+  const repos = await octokit.paginate(octokit.repos.listForAuthenticatedUser, {
+    sort: "updated",
+    per_page: 100,
+    visibility: "all",
+  });
+  return repos.map((r) => ({
+    id: r.id,
+    name: r.name,
+    fullName: r.full_name,
+    owner: r.owner.login,
+    url: r.html_url,
+    description: r.description ?? null,
+    stars: r.stargazers_count ?? 0,
+    language: r.language ?? null,
+    isPrivate: r.private,
+    defaultBranch: r.default_branch,
+  }));
 }

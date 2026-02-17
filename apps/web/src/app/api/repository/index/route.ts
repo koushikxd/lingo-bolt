@@ -21,6 +21,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
+    const { accessToken } = await auth.api.getAccessToken({
+      body: { providerId: "github" },
+      headers: await headers(),
+    });
+
+    if (!accessToken) {
+      return NextResponse.json(
+        { success: false, error: "No GitHub token found. Please re-authenticate." },
+        { status: 401 },
+      );
+    }
+
     const body = bodySchema.parse(await req.json());
     const parsed = parseGitHubRepositoryUrl(body.repoUrl);
     if (!parsed) {
@@ -30,13 +42,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const metadata = await fetchGitHubRepositoryMetadata(parsed);
+    const metadata = await fetchGitHubRepositoryMetadata(parsed, accessToken);
     const branch = body.branch ?? metadata.defaultBranch;
     const indexed = await indexPublicRepository({
       repoUrl: parsed.normalizedUrl,
       branch,
       metadata,
       userId: session.user.id,
+      accessToken,
     });
 
     return NextResponse.json({

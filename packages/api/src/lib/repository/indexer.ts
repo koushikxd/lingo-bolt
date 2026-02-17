@@ -19,10 +19,11 @@ type IndexPublicRepositoryInput = {
   branch: string;
   metadata: RepositoryMetadata;
   userId: string;
+  accessToken?: string;
 };
 
 export async function indexPublicRepository(input: IndexPublicRepositoryInput) {
-  const { repoUrl, branch, metadata, userId } = input;
+  const { repoUrl, branch, metadata, userId, accessToken } = input;
 
   let repository = await prisma.repository.upsert({
     where: { url: metadata.url },
@@ -52,6 +53,7 @@ export async function indexPublicRepository(input: IndexPublicRepositoryInput) {
     repoPath = await cloneRepository({
       repoUrl,
       branch,
+      accessToken,
     });
 
     const vectorIds = await indexRepository({

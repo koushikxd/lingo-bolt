@@ -39,7 +39,12 @@ export type SearchResult = {
 };
 
 export async function indexRepository(input: IndexRepositoryInput) {
-  const { repoPath, repositoryId, repositoryUrl, collectionName = DEFAULT_COLLECTION_NAME } = input;
+  const {
+    repoPath,
+    repositoryId,
+    repositoryUrl,
+    collectionName = DEFAULT_COLLECTION_NAME,
+  } = input;
 
   console.log(`[RAG] chunking repository ${repositoryId}`);
   const chunks = await chunkRepositoryFiles({
@@ -71,7 +76,9 @@ export async function indexRepository(input: IndexRepositoryInput) {
   return vectorIds;
 }
 
-export async function queryRepository(input: QueryRepositoryInput): Promise<SearchResult> {
+export async function queryRepository(
+  input: QueryRepositoryInput,
+): Promise<SearchResult> {
   const {
     query,
     repositoryId,

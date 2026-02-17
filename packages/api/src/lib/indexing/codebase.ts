@@ -7,10 +7,20 @@ import simpleGit from "simple-git";
 type CloneRepositoryInput = {
   repoUrl: string;
   branch?: string;
+  accessToken?: string;
 };
 
 export async function cloneRepository(input: CloneRepositoryInput) {
-  const { repoUrl, branch } = input;
+  const { repoUrl, branch, accessToken } = input;
+
+  let cloneUrl = repoUrl;
+  if (accessToken) {
+    const url = new URL(cloneUrl);
+    url.username = "x-access-token";
+    url.password = accessToken;
+    cloneUrl = url.toString();
+  }
+
   const repoId = nanoid();
   const rootPath = path.resolve(process.cwd(), ".tmp", "repos");
   const repoPath = path.join(rootPath, repoId);
@@ -23,6 +33,6 @@ export async function cloneRepository(input: CloneRepositoryInput) {
     args.push("--branch", branch);
   }
 
-  await git.clone(repoUrl, repoPath, args);
+  await git.clone(cloneUrl, repoPath, args);
   return repoPath;
 }
