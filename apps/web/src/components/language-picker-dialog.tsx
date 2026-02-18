@@ -6,6 +6,7 @@ import { Globe } from "lucide-react";
 
 import { trpc } from "@/utils/trpc";
 import { LANGUAGES } from "@/lib/constants";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +28,7 @@ export function LanguagePickerDialog({
 }) {
   const [selected, setSelected] = useState(currentLanguage);
   const queryClient = useQueryClient();
+  const { t } = useUiI18n();
 
   const mutation = useMutation(
     trpc.user.updatePreferences.mutationOptions({
@@ -34,6 +36,7 @@ export function LanguagePickerDialog({
         queryClient.invalidateQueries({
           queryKey: trpc.user.getPreferences.queryOptions().queryKey,
         });
+        queryClient.invalidateQueries({ queryKey: ["ui-messages"] });
         onClose();
       },
     }),
@@ -50,11 +53,10 @@ export function LanguagePickerDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Globe className="size-4" />
-            Choose your language
+            {t("languagePicker.title")}
           </DialogTitle>
           <DialogDescription>
-            All AI responses will be in your chosen language. You can change this later in the user
-            menu.
+            {t("languagePicker.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -64,8 +66,10 @@ export function LanguagePickerDialog({
               key={lang.code}
               type="button"
               onClick={() => setSelected(lang.code)}
-              className={`rounded-md px-3 py-2 text-left text-xs transition-colors ${
-                selected === lang.code ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+              className={`px-3 py-2 text-left text-xs transition-colors cursor-pointer ${
+                selected === lang.code
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
               }`}
             >
               {lang.label}
@@ -79,7 +83,9 @@ export function LanguagePickerDialog({
             onClick={() => mutation.mutate({ preferredLanguage: selected })}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Saving..." : "Continue"}
+            {mutation.isPending
+              ? t("languagePicker.saving")
+              : t("languagePicker.continue")}
           </Button>
         </DialogFooter>
       </DialogContent>

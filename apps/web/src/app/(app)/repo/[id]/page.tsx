@@ -6,12 +6,14 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, FileText, GitBranch, Languages, MessageSquare, Star } from "lucide-react";
 
 import { trpc } from "@/utils/trpc";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function RepoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: repo, isLoading } = useQuery(trpc.repository.getById.queryOptions({ id }));
+  const { t } = useUiI18n();
 
   if (isLoading) {
     return (
@@ -30,7 +32,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   if (!repo) {
-    return <p className="py-12 text-center text-sm text-muted-foreground">Repository not found</p>;
+    return <p className="py-12 text-center text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>;
   }
 
   return (
@@ -61,7 +63,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
           </span>
           <span className="flex items-center gap-1 tabular-nums">
             <GitBranch className="size-3" aria-hidden="true" />
-            {repo.chunksIndexed} chunks
+            {t("repoOverview.chunks", { count: repo.chunksIndexed })}
           </span>
         </div>
       </div>
@@ -74,17 +76,20 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
           <div>
             <div className="flex items-center gap-2 text-sm font-medium">
               <Languages className="size-4" aria-hidden="true" />
-              Onboarding Docs
+              {t("repoOverview.onboardingDocs")}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              AI-powered onboarding documentation
+              {t("repoOverview.onboardingDescription")}
             </p>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs tabular-nums text-muted-foreground">
               {repo.onboardingDocs.length > 0
-                ? `${repo.onboardingDocs.length} doc${repo.onboardingDocs.length === 1 ? "" : "s"} generated`
-                : "Auto-generating..."}
+                ? t("repoOverview.docsGenerated", {
+                    count: repo.onboardingDocs.length,
+                    suffix: repo.onboardingDocs.length === 1 ? "" : "s",
+                  })
+                : t("repoOverview.autoGenerating")}
             </span>
             <ArrowRight
               className="size-3.5 text-muted-foreground transition-transform duration-150 ease-out group-hover:translate-x-0.5"
@@ -100,17 +105,20 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
           <div>
             <div className="flex items-center gap-2 text-sm font-medium">
               <FileText className="size-4" aria-hidden="true" />
-              Markdown Translation
+              {t("repoOverview.markdownTranslation")}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Translate markdown files via lingo.dev
+              {t("repoOverview.markdownDescription")}
             </p>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs tabular-nums text-muted-foreground">
               {repo.markdownTranslations.length > 0
-                ? `${repo.markdownTranslations.length} translation${repo.markdownTranslations.length === 1 ? "" : "s"} saved`
-                : "No translations yet"}
+                ? t("repoOverview.translationsSaved", {
+                    count: repo.markdownTranslations.length,
+                    suffix: repo.markdownTranslations.length === 1 ? "" : "s",
+                  })
+                : t("repoOverview.noTranslations")}
             </span>
             <ArrowRight
               className="size-3.5 text-muted-foreground transition-transform duration-150 ease-out group-hover:translate-x-0.5"
@@ -126,14 +134,16 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
           <div>
             <div className="flex items-center gap-2 text-sm font-medium">
               <MessageSquare className="size-4" aria-hidden="true" />
-              Chat with Repo
+              {t("repoOverview.chatWithRepo")}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Explore issues, PRs & get contribution help
+              {t("repoOverview.chatDescription")}
             </p>
           </div>
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-xs tabular-nums text-muted-foreground">AI-powered assistant</span>
+            <span className="text-xs tabular-nums text-muted-foreground">
+              {t("repoOverview.aiAssistant")}
+            </span>
             <ArrowRight
               className="size-3.5 text-muted-foreground transition-transform duration-150 ease-out group-hover:translate-x-0.5"
               aria-hidden="true"
@@ -144,7 +154,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
 
       {repo.onboardingDocs.length > 0 ? (
         <section>
-          <h2 className="mb-3 text-sm font-semibold">Recent Onboarding Docs</h2>
+          <h2 className="mb-3 text-sm font-semibold">{t("repoOverview.recentOnboardingDocs")}</h2>
           <div className="space-y-1.5">
             {repo.onboardingDocs.slice(0, 5).map((doc) => (
               <Link
@@ -160,7 +170,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
                     {new Date(doc.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <span className="text-xs text-muted-foreground">View</span>
+                <span className="text-xs text-muted-foreground">{t("common.view")}</span>
               </Link>
             ))}
           </div>

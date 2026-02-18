@@ -7,6 +7,7 @@ import { Check, Lock, Search, Star } from "lucide-react";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,27 +27,19 @@ type GitHubRepo = {
   defaultBranch: string;
 };
 
-const INDEXING_STEPS = [
-  "Cloning repository...",
-  "Analyzing files...",
-  "Generating embeddings...",
-  "Storing vectors...",
-  "Finishing up...",
-];
-
 const PAGE_SIZE = 10;
 
-function IndexingProgress({ label, step }: { label: string; step: number }) {
+function IndexingProgress({ label, step, steps }: { label: string; step: number; steps: string[] }) {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
       <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 flex flex-col items-center justify-center gap-6">
         <Spinner className="size-6" />
         <div className="text-center">
           <p className="text-sm font-medium">{label}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{INDEXING_STEPS[step]}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{steps[step]}</p>
         </div>
         <div className="flex w-full max-w-xs flex-col gap-2">
-          {INDEXING_STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               <div
                 className={`flex size-5 shrink-0 items-center justify-center border text-[10px] transition-colors duration-200 ease-out ${i < step ? "border-primary bg-primary text-primary-foreground" : i === step ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground bg-muted/50"}`}
@@ -75,6 +68,14 @@ export default function NewRepoPage() {
   const [indexingStep, setIndexingStep] = useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const stepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { t } = useUiI18n();
+  const indexingSteps = [
+    t("newRepo.indexStep1"),
+    t("newRepo.indexStep2"),
+    t("newRepo.indexStep3"),
+    t("newRepo.indexStep4"),
+    t("newRepo.indexStep5"),
+  ];
 
   const { data: repos = [], isLoading: loadingRepos } = useQuery<GitHubRepo[]>({
     queryKey: ["github-repos"],
@@ -110,12 +111,12 @@ export default function NewRepoPage() {
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
       stepTimerRef.current = setInterval(() => {
         step++;
-        if (step < INDEXING_STEPS.length) setIndexingStep(step);
+        if (step < indexingSteps.length) setIndexingStep(step);
       }, 4000);
     },
     onSuccess: (data) => {
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
-      toast.success("Repository indexed successfully");
+      toast.success(t("newRepo.toastIndexSuccess"));
       queryClient.invalidateQueries({
         queryKey: trpc.repository.list.queryOptions().queryKey,
       });
@@ -160,7 +161,7 @@ export default function NewRepoPage() {
     e.preventDefault();
     const trimmed = manualUrl.trim();
     if (!/^https?:\/\/github\.com\/[^/]+\/[^/]+\/?$/i.test(trimmed)) {
-      toast.error("Enter a valid GitHub URL (https://github.com/owner/repo)");
+      toast.error(t("newRepo.validGithubUrlError"));
       return;
     }
     indexMutation.mutate(trimmed);
@@ -170,8 +171,9 @@ export default function NewRepoPage() {
     const indexingRepo = repos.find((r) => r.url === indexMutation.variables);
     return (
       <IndexingProgress
-        label={indexingRepo?.fullName ?? "Indexing repository"}
+        label={indexingRepo?.fullName ?? t("newRepo.indexingRepository")}
         step={indexingStep}
+        steps={indexingSteps}
       />
     );
   }
@@ -179,17 +181,17 @@ export default function NewRepoPage() {
   return (
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6 pt-6">
       <div>
-        <h1 className="text-lg font-semibold tracking-tight text-pretty">Index Repository</h1>
-        <p className="text-xs text-muted-foreground">
-          Select a repository from your GitHub account or enter a URL manually
-        </p>
+        <h1 className="text-lg font-semibold tracking-tight text-pretty">
+          {t("newRepo.indexRepository")}
+        </h1>
+        <p className="text-xs text-muted-foreground">{t("newRepo.subtitle")}</p>
       </div>
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium">Your Repositories</p>
+          <p className="text-sm font-medium">{t("newRepo.yourRepositories")}</p>
           <span className="text-xs tabular-nums text-muted-foreground">
-            {filtered.length} repos
+            {t("newRepo.reposCount", { count: filtered.length })}
           </span>
         </div>
         <div className="relative">
@@ -200,9 +202,9 @@ export default function NewRepoPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search repositories..."
+            placeholder={t("newRepo.searchRepositories")}
             className="pl-8"
-            aria-label="Search repositories"
+            aria-label={t("newRepo.searchRepositoriesAria")}
           />
         </div>
 
@@ -220,7 +222,7 @@ export default function NewRepoPage() {
         ) : filtered.length === 0 ? (
           <div className="flex items-center justify-center border border-dashed border-border py-12">
             <p className="text-xs text-muted-foreground">
-              {search ? "No repositories match your search" : "No repositories found"}
+              {search ? t("newRepo.noReposMatch") : t("newRepo.noReposFound")}
             </p>
           </div>
         ) : (
@@ -238,7 +240,7 @@ export default function NewRepoPage() {
                     {repo.isPrivate ? (
                       <Badge variant="outline" className="shrink-0 text-[10px]">
                         <Lock className="mr-0.5 size-2.5" aria-hidden="true" />
-                        Private
+                        {t("newRepo.private")}
                       </Badge>
                     ) : null}
                   </div>
@@ -268,18 +270,18 @@ export default function NewRepoPage() {
       </section>
 
       <section className="space-y-3">
-        <p className="text-sm font-medium">Manual URL</p>
+        <p className="text-sm font-medium">{t("newRepo.manualUrl")}</p>
         <form onSubmit={handleManualSubmit} className="flex gap-2">
           <Input
             value={manualUrl}
             onChange={(e) => setManualUrl(e.target.value)}
-            placeholder="https://github.com/owner/repo"
+            placeholder={t("newRepo.manualUrlPlaceholder")}
             autoComplete="off"
             disabled={indexMutation.isPending}
             className="flex-1"
           />
           <Button type="submit" disabled={indexMutation.isPending}>
-            {indexMutation.isPending ? <Spinner className="size-3.5" /> : "Index"}
+            {indexMutation.isPending ? <Spinner className="size-3.5" /> : t("newRepo.index")}
           </Button>
         </form>
       </section>

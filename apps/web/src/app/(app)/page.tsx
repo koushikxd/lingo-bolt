@@ -8,6 +8,7 @@ import { ExternalLink, GitBranch, Plus, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,18 +39,19 @@ export default function DashboardPage() {
     owner: string;
     name: string;
   } | null>(null);
+  const { t } = useUiI18n();
 
   const deleteMutation = useMutation(
     trpc.repository.delete.mutationOptions({
       onSuccess: () => {
-        toast.success("Repository deleted");
+        toast.success(t("dashboard.toastDeleted"));
         queryClient.invalidateQueries({
           queryKey: trpc.repository.list.queryOptions().queryKey,
         });
         setDeleteTarget(null);
       },
       onError: (error) => {
-        toast.error(error.message ?? "Failed to delete repository");
+        toast.error(error.message ?? t("dashboard.toastDeleteFailed"));
         setDeleteTarget(null);
       },
     }),
@@ -64,12 +66,12 @@ export default function DashboardPage() {
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between pt-6">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-pretty">Repositories</h1>
-          <p className="text-xs text-muted-foreground">Your indexed repositories</p>
+          <h1 className="text-lg font-semibold tracking-tight text-pretty">{t("common.repositories")}</h1>
+          <p className="text-xs text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
         <Link href={"/repo/new" as never} className={buttonVariants({ size: "sm" })}>
           <Plus className="size-3.5" aria-hidden="true" />
-          Index Repo
+          {t("dashboard.indexRepo")}
         </Link>
       </div>
 
@@ -87,10 +89,10 @@ export default function DashboardPage() {
         </div>
       ) : !repos || repos.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-4 border border-dashed border-border py-16">
-          <p className="text-sm text-muted-foreground">No repositories indexed yet</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.noReposIndexed")}</p>
           <Link href={"/repo/new" as never} className={buttonVariants({ size: "sm" })}>
             <Plus className="size-3.5" aria-hidden="true" />
-            Index Your First Repo
+            {t("dashboard.indexFirstRepo")}
           </Link>
         </div>
       ) : (
@@ -139,7 +141,7 @@ export default function DashboardPage() {
               <ContextMenuContent>
                 <ContextMenuItem onClick={() => router.push(`/repo/${repo.id}` as never)}>
                   <ExternalLink className="size-3.5" aria-hidden="true" />
-                  Open
+                  {t("dashboard.open")}
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem
@@ -153,7 +155,7 @@ export default function DashboardPage() {
                   }
                 >
                   <Trash2 className="size-3.5" aria-hidden="true" />
-                  Delete
+                  {t("common.delete")}
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
@@ -169,20 +171,21 @@ export default function DashboardPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete repository?</AlertDialogTitle>
+            <AlertDialogTitle>{t("dashboard.deleteRepositoryTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove {deleteTarget?.owner}/{deleteTarget?.name} and all its indexed data,
-              onboarding docs, and translations. This action cannot be undone.
+              {t("dashboard.deleteRepositoryDescription", {
+                repo: deleteTarget ? `${deleteTarget.owner}/${deleteTarget.name}` : "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={confirmDelete}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? "Deleting" : "Delete"}
+              {deleteMutation.isPending ? t("dashboard.deleting") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

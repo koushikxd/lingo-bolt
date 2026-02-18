@@ -17,6 +17,7 @@ import {
 
 import { trpc } from "@/utils/trpc";
 import { LANGUAGES, PROSE_CLASSES } from "@/lib/constants";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -44,6 +45,7 @@ type GenerateState = "idle" | "generating" | "translating" | "done";
 export default function OnboardingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const queryClient = useQueryClient();
+  const { t } = useUiI18n();
 
   const [state, setState] = useState<GenerateState>("idle");
   const [locale, setLocale] = useState("en");
@@ -88,7 +90,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
 
       if (!res.ok || !res.body) {
         const data = (await res.json()) as { error?: string };
-        toast.error(data.error ?? "Failed to generate docs");
+        toast.error(data.error ?? t("onboarding.toastGenerationFailed"));
         setState("idle");
         return;
       }
@@ -120,7 +122,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
           accumulated = translateData.translatedText;
           setStreamContent(accumulated);
         } else {
-          toast.error("Translation failed, showing English version");
+          toast.error(t("onboarding.toastTranslationFallback"));
         }
       }
 
@@ -142,17 +144,17 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
 
       setState("done");
     } catch {
-      toast.error("Something went wrong during generation");
+      toast.error(t("onboarding.toastGenerationError"));
       setState("idle");
     }
-  }, [id, locale, queryClient]);
+  }, [id, locale, queryClient, t]);
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(displayContent);
     setCopied(true);
-    toast.success("Copied to clipboard");
+    toast.success(t("onboarding.toastCopied"));
     setTimeout(() => setCopied(false), 2000);
-  }, [displayContent]);
+  }, [displayContent, t]);
 
   if (isLoading) {
     return (
@@ -174,7 +176,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
     return (
       <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2">
         <BookOpen className="size-8 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Repository not found</p>
+        <p className="text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>
       </div>
     );
   }
@@ -187,7 +189,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
             <BookOpen className="size-4 text-primary" />
           </div>
           <div>
-            <h1 className="text-sm font-semibold">Onboarding Docs</h1>
+            <h1 className="text-sm font-semibold">{t("onboarding.title")}</h1>
             <p className="text-[10px] text-muted-foreground">
               {repo.owner}/{repo.name}
             </p>
@@ -210,10 +212,11 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                       ?.label ?? "English"}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    v
-                    {selectedDocId
-                      ? repo.onboardingDocs.findIndex((d) => d.id === selectedDocId) + 1
-                      : repo.onboardingDocs.length}
+                    {t("onboarding.versionShort", {
+                      version: selectedDocId
+                        ? repo.onboardingDocs.findIndex((d) => d.id === selectedDocId) + 1
+                        : repo.onboardingDocs.length,
+                    })}
                   </span>
                   <ChevronDown className="size-3 opacity-50" />
                 </DropdownMenuTrigger>
@@ -237,8 +240,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                         )}
                       </div>
                       <span className="text-[10px] text-muted-foreground">
-                        {new Date(doc.createdAt).toLocaleDateString()} • Version{" "}
-                        {repo.onboardingDocs.length - i}
+                        {new Date(doc.createdAt).toLocaleDateString()} •{" "}
+                        {t("onboarding.versionLabel", { version: repo.onboardingDocs.length - i })}
                       </span>
                     </DropdownMenuItem>
                   ))}
@@ -256,15 +259,13 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                   })}
                 >
                   <RefreshCw className="size-3.5" />
-                  <span className="hidden sm:inline">Regenerate</span>
+                  <span className="hidden sm:inline">{t("onboarding.regenerate")}</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 p-3">
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <h4 className="text-xs font-medium leading-none">New Version</h4>
-                      <p className="text-[10px] text-muted-foreground">
-                        Generate a fresh guide in a specific language.
-                      </p>
+                      <h4 className="text-xs font-medium leading-none">{t("onboarding.newVersion")}</h4>
+                      <p className="text-[10px] text-muted-foreground">{t("onboarding.generateFreshGuide")}</p>
                     </div>
                     <div className="space-y-2">
                       <Select
@@ -291,15 +292,15 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                       >
                         {state === "generating" ? (
                           <>
-                            <Loader2 className="mr-2 size-3 animate-spin" /> Generating...
+                            <Loader2 className="mr-2 size-3 animate-spin" /> {t("common.generating")}
                           </>
                         ) : state === "translating" ? (
                           <>
-                            <Loader2 className="mr-2 size-3 animate-spin" /> Translating...
+                            <Loader2 className="mr-2 size-3 animate-spin" /> {t("common.translating")}
                           </>
                         ) : (
                           <>
-                            <Sparkles className="mr-2 size-3" /> Generate
+                            <Sparkles className="mr-2 size-3" /> {t("common.generate")}
                           </>
                         )}
                       </Button>
@@ -325,7 +326,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                       <ClipboardCopy className="size-3.5" />
                     )}
                   </TooltipTrigger>
-                  <TooltipContent>Copy content</TooltipContent>
+                  <TooltipContent>{t("onboarding.copyContent")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </>
@@ -341,11 +342,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                 <Sparkles className="size-6 text-primary" />
               </div>
               <div className="space-y-2 max-w-sm">
-                <h3 className="text-base font-semibold">No onboarding docs yet</h3>
-                <p className="text-sm text-muted-foreground">
-                  Generate comprehensive onboarding documentation for your repository automatically
-                  using AI.
-                </p>
+                <h3 className="text-base font-semibold">{t("onboarding.noDocsYet")}</h3>
+                <p className="text-sm text-muted-foreground">{t("onboarding.noDocsSubtitle")}</p>
               </div>
               <div className="flex items-center gap-2 w-full max-w-xs">
                 <Select value={locale} onValueChange={(val) => val && setLocale(val)}>
@@ -361,7 +359,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                   </SelectContent>
                 </Select>
                 <Button size="sm" onClick={handleRegenerate} className="h-9 px-4 text-xs">
-                  Generate
+                  {t("common.generate")}
                 </Button>
               </div>
             </div>

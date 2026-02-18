@@ -8,6 +8,7 @@ import { Bot, ChevronsUpDown, Globe, Languages, LogOut, Plus } from "lucide-reac
 
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/utils/trpc";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { LanguagePickerDialog } from "@/components/language-picker-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -49,8 +50,9 @@ type BreadcrumbEntry = { label: string; href?: string };
 function buildBreadcrumbs(
   pathname: string,
   activeRepo: { owner: string; name: string; id: string } | null | undefined,
+  translate: (key: "common.repositories" | "appShell.indexNew" | "appShell.breadcrumb.onboarding" | "appShell.breadcrumb.markdown" | "appShell.breadcrumb.chat") => string,
 ): BreadcrumbEntry[] {
-  const crumbs: BreadcrumbEntry[] = [{ label: "Repositories", href: "/" }];
+  const crumbs: BreadcrumbEntry[] = [{ label: translate("common.repositories"), href: "/" }];
 
   if (pathname === "/") return crumbs;
 
@@ -59,7 +61,7 @@ function buildBreadcrumbs(
   }
 
   if (pathname === "/repo/new") {
-    crumbs.push({ label: "Index New" });
+    crumbs.push({ label: translate("appShell.indexNew") });
     return crumbs;
   }
 
@@ -70,11 +72,11 @@ function buildBreadcrumbs(
     });
 
     if (pathname.endsWith("/onboarding")) {
-      crumbs.push({ label: "Onboarding" });
+      crumbs.push({ label: translate("appShell.breadcrumb.onboarding") });
     } else if (pathname.endsWith("/markdown")) {
-      crumbs.push({ label: "Markdown" });
+      crumbs.push({ label: translate("appShell.breadcrumb.markdown") });
     } else if (pathname.endsWith("/chat")) {
-      crumbs.push({ label: "Chat" });
+      crumbs.push({ label: translate("appShell.breadcrumb.chat") });
     }
   }
 
@@ -87,6 +89,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = authClient.useSession();
   const { data: repos, isLoading: loadingRepos } = useQuery(trpc.repository.list.queryOptions());
   const { data: prefs } = useQuery(trpc.user.getPreferences.queryOptions());
+  const { t } = useUiI18n();
   const [langPickerOpen, setLangPickerOpen] = useState(() => {
     if (typeof window === "undefined") return false;
     return !localStorage.getItem("language-chosen");
@@ -101,7 +104,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const repoIdMatch = pathname.match(/^\/repo\/([^/]+)/);
   const activeRepoId = repoIdMatch?.[1] !== "new" ? repoIdMatch?.[1] : null;
   const activeRepo = activeRepoId ? repos?.find((r) => r.id === activeRepoId) : null;
-  const breadcrumbs = buildBreadcrumbs(pathname, activeRepo);
+  const breadcrumbs = buildBreadcrumbs(pathname, activeRepo, t);
 
   return (
     <SidebarProvider>
@@ -120,8 +123,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Repositories</SidebarGroupLabel>
-            <SidebarGroupAction render={<Link href={"/repo/new" as never} />} title="Index New">
+            <SidebarGroupLabel>{t("appShell.repositories")}</SidebarGroupLabel>
+            <SidebarGroupAction
+              render={<Link href={"/repo/new" as never} />}
+              title={t("appShell.indexNew")}
+            >
               <Plus aria-hidden="true" />
             </SidebarGroupAction>
             <SidebarGroupContent>
@@ -147,13 +153,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                   ))
                 ) : (
-                  <p className="px-2 py-1.5 text-xs text-muted-foreground">No repos yet</p>
+                  <p className="px-2 py-1.5 text-xs text-muted-foreground">
+                    {t("appShell.noReposYet")}
+                  </p>
                 )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
           <SidebarGroup>
-            <SidebarGroupLabel>Bot</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("appShell.bot")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
@@ -218,11 +226,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setLangPickerOpen(true)}>
                       <Languages className="size-4" aria-hidden="true" />
-                      Language
+                      {t("appShell.language")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="size-4" aria-hidden="true" />
-                      Sign out
+                      {t("appShell.signOut")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -233,7 +241,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
+          <SidebarTrigger className="-ml-1" aria-label={t("appShell.toggleSidebar")} />
           <Separator orientation="vertical" className="mr-2 h-4!" />
           <Breadcrumb>
             <BreadcrumbList>

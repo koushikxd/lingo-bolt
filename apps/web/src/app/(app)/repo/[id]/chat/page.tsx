@@ -19,22 +19,23 @@ import {
 } from "lucide-react";
 
 import { PROSE_CLASSES } from "@/lib/constants";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 const SUGGESTED_PROMPTS = [
-  { label: "Show open issues", icon: CircleDot },
-  { label: "Recommend an easy issue to solve", icon: Sparkles },
-  { label: "List open pull requests", icon: GitPullRequest },
-  { label: "Search the codebase for the main entry point", icon: Code },
-];
+  { key: "chat.prompt.showOpenIssues", icon: CircleDot },
+  { key: "chat.prompt.recommendEasyIssue", icon: Sparkles },
+  { key: "chat.prompt.listOpenPrs", icon: GitPullRequest },
+  { key: "chat.prompt.searchEntryPoint", icon: Code },
+] as const;
 
-const TOOL_LABELS: Record<string, string> = {
-  listIssues: "Fetching issues",
-  getIssue: "Loading issue details",
-  listPullRequests: "Fetching pull requests",
-  getPullRequest: "Loading PR details",
-  searchCodebase: "Searching codebase",
+const TOOL_LABEL_KEYS: Record<string, "chat.tool.fetchIssues" | "chat.tool.loadingIssueDetails" | "chat.tool.fetchingPrs" | "chat.tool.loadingPrDetails" | "chat.tool.searchingCodebase"> = {
+  listIssues: "chat.tool.fetchIssues",
+  getIssue: "chat.tool.loadingIssueDetails",
+  listPullRequests: "chat.tool.fetchingPrs",
+  getPullRequest: "chat.tool.loadingPrDetails",
+  searchCodebase: "chat.tool.searchingCodebase",
 };
 
 export default function RepoChatPage({
@@ -46,6 +47,7 @@ export default function RepoChatPage({
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState("");
+  const { t } = useUiI18n();
 
   const { messages, sendMessage, status, setMessages } = useChat({
     transport: new DefaultChatTransport({
@@ -82,22 +84,22 @@ export default function RepoChatPage({
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 px-4 pb-16">
             <div className="text-center">
-              <p className="text-sm font-medium">How can I help you?</p>
+              <p className="text-sm font-medium">{t("chat.emptyTitle")}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Ask about issues, PRs, or the codebase
+                {t("chat.emptySubtitle")}
               </p>
             </div>
             <div className="grid w-full max-w-sm grid-cols-2 gap-1.5">
               {SUGGESTED_PROMPTS.map((prompt) => (
                 <button
-                  key={prompt.label}
+                  key={prompt.key}
                   type="button"
-                  onClick={() => handlePromptClick(prompt.label)}
+                  onClick={() => handlePromptClick(t(prompt.key))}
                   disabled={isLoading}
-                  className="flex items-center gap-2 border border-neutral-700 bg-neutral-900 px-3 py-2.5 text-left text-xs transition-colors duration-150 ease-out hover:bg-muted/50 disabled:opacity-40"
+                  className="flex items-center gap-2 border border-neutral-700 bg-neutral-900 px-3 py-2.5 text-left text-xs transition-colors duration-150 ease-out hover:bg-muted/50 disabled:opacity-40 cursor-pointer"
                 >
                   <prompt.icon className="size-3.5 shrink-0 text-muted-foreground" />
-                  <span className="text-muted-foreground">{prompt.label}</span>
+                  <span className="text-muted-foreground">{t(prompt.key)}</span>
                 </button>
               ))}
             </div>
@@ -144,7 +146,9 @@ export default function RepoChatPage({
 
                     if (part.type.startsWith("tool-")) {
                       const toolName = part.type.replace("tool-", "");
-                      const label = TOOL_LABELS[toolName] ?? toolName;
+                      const label = TOOL_LABEL_KEYS[toolName]
+                        ? t(TOOL_LABEL_KEYS[toolName])
+                        : toolName;
                       const state =
                         "state" in part ? (part.state as string) : "";
                       if (
@@ -199,8 +203,8 @@ export default function RepoChatPage({
               inputRef.current?.focus();
             }}
             disabled={messages.length === 0}
-            title="New chat"
-            className="flex size-7 shrink-0 items-center justify-center border border-neutral-700 bg-neutral-900 text-muted-foreground transition-colors duration-150 ease-out hover:bg-muted/50 hover:text-foreground disabled:opacity-30"
+            title={t("chat.newChatTitle")}
+            className="flex size-7 shrink-0 items-center justify-center border border-neutral-700 bg-neutral-900 text-muted-foreground transition-colors duration-150 ease-out hover:bg-muted/50 hover:text-foreground disabled:opacity-30 cursor-pointer"
           >
             <SquarePen className="size-3.5" />
           </button>
@@ -209,14 +213,14 @@ export default function RepoChatPage({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about issues, PRs, or the codebase..."
+            placeholder={t("chat.inputPlaceholder")}
             className="flex-1 border-b border-neutral-700 bg-transparent py-1.5 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-foreground/30 transition-colors duration-150"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="flex size-7 shrink-0 items-center justify-center border border-neutral-700 bg-neutral-900 text-muted-foreground transition-colors duration-150 ease-out hover:bg-muted/50 hover:text-foreground disabled:opacity-30"
+            className="flex size-7 shrink-0 items-center justify-center border border-neutral-700 bg-neutral-900 text-muted-foreground transition-colors duration-150 ease-out hover:bg-muted/50 hover:text-foreground disabled:opacity-30 cursor-pointer"
           >
             <ArrowUp className="size-3.5" />
           </button>

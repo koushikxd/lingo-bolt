@@ -5,12 +5,14 @@ import { Github } from "lucide-react";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const { t } = useUiI18n();
 
   const handleGitHubSignIn = async () => {
     setLoading(true);
@@ -19,7 +21,7 @@ export default function LoginPage() {
       callbackURL: "/",
     });
     if (error) {
-      toast.error(error.message ?? "Failed to sign in with GitHub");
+      toast.error(error.message ?? t("login.signInFailed"));
       setLoading(false);
     }
   };
@@ -27,20 +29,20 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Welcome</CardTitle>
-        <CardDescription>Sign in with your GitHub account to get started</CardDescription>
+        <CardTitle>{t("login.welcome")}</CardTitle>
+        <CardDescription>{t("login.subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <Button className="w-full" disabled={loading} onClick={handleGitHubSignIn}>
           {loading ? (
             <>
               <Spinner className="size-3.5" />
-              Connecting to GitHub...
+              {t("login.connectingGithub")}
             </>
           ) : (
             <>
               <Github className="size-4" />
-              Sign in with GitHub
+              {t("login.signInGithub")}
             </>
           )}
         </Button>
