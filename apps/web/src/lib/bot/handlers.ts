@@ -184,6 +184,28 @@ export async function handleAutoTranslate(
   );
 }
 
+export async function getEffectiveSettings(installationId: number, repoFullName: string) {
+  const installation = await prisma.botInstallation.findUnique({
+    where: { installationId },
+  });
+  if (!installation) return null;
+
+  const repoConfig = await prisma.botRepoConfig.findUnique({
+    where: {
+      installationId_repoFullName: {
+        installationId: installation.id,
+        repoFullName,
+      },
+    },
+  });
+
+  return {
+    defaultLanguage: repoConfig?.defaultLanguage ?? installation.defaultLanguage,
+    autoTranslate: repoConfig?.autoTranslate ?? installation.autoTranslate,
+    autoLabel: repoConfig?.autoLabel ?? installation.autoLabel,
+  };
+}
+
 export async function handleIssueComment(
   octokit: OctokitLike,
   owner: string,
@@ -195,9 +217,7 @@ export async function handleIssueComment(
   command: BotCommand,
   installationId: number,
 ) {
-  const installation = await prisma.botInstallation.findUnique({
-    where: { installationId },
-  });
+  const settings = await getEffectiveSettings(installationId, `${owner}/${repo}`);
 
   if (command.action === "translate") {
     const contentToTranslate = issueBody || commentBody;
@@ -205,7 +225,7 @@ export async function handleIssueComment(
   }
 
   if (command.action === "summarize") {
-    const lang = command.language ?? installation?.defaultLanguage ?? "english";
+    const lang = command.language ?? settings?.defaultLanguage ?? "english";
     const contentToSummarize = `# ${issueTitle}\n\n${issueBody}`;
     await handleSummarize(octokit, owner, repo, issueNumber, contentToSummarize, lang);
   }

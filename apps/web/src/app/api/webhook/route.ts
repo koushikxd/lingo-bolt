@@ -3,7 +3,12 @@ import prisma from "@lingo-dev/db";
 
 import { githubApp } from "@/lib/github-app";
 import { parseCommand } from "@/lib/bot/commands";
-import { handleAutoLabel, handleAutoTranslate, handleIssueComment } from "@/lib/bot/handlers";
+import {
+  getEffectiveSettings,
+  handleAutoLabel,
+  handleAutoTranslate,
+  handleIssueComment,
+} from "@/lib/bot/handlers";
 
 function getAccountInfo(account: Record<string, unknown>) {
   const login = (account.login ?? account.slug ?? account.name ?? "unknown") as string;
@@ -41,12 +46,10 @@ githubApp.webhooks.on("issues.opened", async ({ octokit, payload }) => {
   const installationId = payload.installation?.id;
   if (!installationId) return;
 
-  const installation = await prisma.botInstallation.findUnique({
-    where: { installationId },
-  });
-  if (!installation) return;
+  const settings = await getEffectiveSettings(installationId, `${owner}/${repo}`);
+  if (!settings) return;
 
-  if (installation.autoLabel) {
+  if (settings.autoLabel) {
     await handleAutoLabel(
       octokit,
       owner,
@@ -57,16 +60,36 @@ githubApp.webhooks.on("issues.opened", async ({ octokit, payload }) => {
     );
   }
 
-  if (installation.autoTranslate) {
+  if (settings.autoTranslate) {
     const text = `${payload.issue.title}\n\n${payload.issue.body ?? ""}`;
-    await handleAutoTranslate(
+    await handleAutoTranslate(octokit, owner, repo, issueNumber, text, settings.defaultLanguage);
+  }
+});
+
+githubApp.webhooks.on("pull_request.opened", async ({ octokit, payload }) => {
+  const owner = payload.repository.owner.login;
+  const repo = payload.repository.name;
+  const prNumber = payload.pull_request.number;
+  const installationId = payload.installation?.id;
+  if (!installationId) return;
+
+  const settings = await getEffectiveSettings(installationId, `${owner}/${repo}`);
+  if (!settings) return;
+
+  if (settings.autoLabel) {
+    await handleAutoLabel(
       octokit,
       owner,
       repo,
-      issueNumber,
-      text,
-      installation.defaultLanguage,
+      prNumber,
+      payload.pull_request.body ?? "",
+      payload.pull_request.title,
     );
+  }
+
+  if (settings.autoTranslate) {
+    const text = `${payload.pull_request.title}\n\n${payload.pull_request.body ?? ""}`;
+    await handleAutoTranslate(octokit, owner, repo, prNumber, text, settings.defaultLanguage);
   }
 });
 
@@ -100,17 +123,15 @@ githubApp.webhooks.on("issue_comment.created", async ({ octokit, payload }) => {
     return;
   }
 
-  const installation = await prisma.botInstallation.findUnique({
-    where: { installationId },
-  });
-  if (installation?.autoTranslate) {
+  const settings = await getEffectiveSettings(installationId, `${owner}/${repo}`);
+  if (settings?.autoTranslate) {
     await handleAutoTranslate(
       octokit,
       owner,
       repo,
       issueNumber,
       commentBody,
-      installation.defaultLanguage,
+      settings.defaultLanguage,
     );
   }
 });

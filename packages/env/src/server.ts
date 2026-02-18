@@ -7,7 +7,7 @@ export const env = createEnv({
     DATABASE_URL: z.string().min(1),
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.url(),
-    CORS_ORIGIN: z.url(),
+    CORS_ORIGIN: z.string().min(1),
     QDRANT_URL: z.url().default("http://localhost:6333"),
     QDRANT_API_KEY: z.string().min(1),
     OPENAI_API_KEY: z.string().min(1),

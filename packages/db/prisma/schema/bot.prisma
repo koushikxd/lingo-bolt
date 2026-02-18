@@ -8,4 +8,21 @@ model BotInstallation {
   autoLabel       Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  repoConfigs BotRepoConfig[]
+}
+
+model BotRepoConfig {
+  id              String          @id @default(cuid())
+  installationId  String
+  installation    BotInstallation @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  repoFullName    String
+  defaultLanguage String?
+  autoTranslate   Boolean?
+  autoLabel       Boolean?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@unique([installationId, repoFullName])
+  @@index([installationId])
 }

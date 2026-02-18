@@ -23,16 +23,19 @@ Install the GitHub App on your account or organization repos. Once installed, th
 ```
 @lingo-bolt translate to spanish
 ```
+
 Translates the issue or PR body into the target language and posts a reply.
 
 ```
 @lingo-bolt summarize
 ```
+
 Summarizes the issue or PR in the maintainer's default language (set in the bot dashboard).
 
 ```
 @lingo-bolt summarize in french
 ```
+
 Summarizes in a specific language.
 
 ### Automatic features
