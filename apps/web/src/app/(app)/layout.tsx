@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Bot, ChevronsUpDown, Globe, LogOut, Plus } from "lucide-react";
+import { Bot, ChevronsUpDown, Globe, Languages, LogOut, Plus } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/utils/trpc";
+import { LanguagePickerDialog } from "@/components/language-picker-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Breadcrumb,
@@ -71,6 +73,8 @@ function buildBreadcrumbs(
       crumbs.push({ label: "Onboarding" });
     } else if (pathname.endsWith("/markdown")) {
       crumbs.push({ label: "Markdown" });
+    } else if (pathname.endsWith("/chat")) {
+      crumbs.push({ label: "Chat" });
     }
   }
 
@@ -82,6 +86,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
   const { data: repos, isLoading: loadingRepos } = useQuery(trpc.repository.list.queryOptions());
+  const { data: prefs } = useQuery(trpc.user.getPreferences.queryOptions());
+  const [langPickerOpen, setLangPickerOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !localStorage.getItem("language-chosen");
+  });
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -207,6 +216,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setLangPickerOpen(true)}>
+                      <Languages className="size-4" aria-hidden="true" />
+                      Language
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="size-4" aria-hidden="true" />
                       Sign out
@@ -244,6 +257,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
         <div className="flex-1 overflow-auto px-3">{children}</div>
       </SidebarInset>
+
+      {prefs && (
+        <LanguagePickerDialog
+          open={langPickerOpen}
+          onClose={() => {
+            localStorage.setItem("language-chosen", "1");
+            setLangPickerOpen(false);
+          }}
+          currentLanguage={prefs.preferredLanguage}
+        />
+      )}
     </SidebarProvider>
   );
 }

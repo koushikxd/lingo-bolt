@@ -3,7 +3,7 @@
 import { use } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, FileText, GitBranch, Languages, Star } from "lucide-react";
+import { ArrowRight, FileText, GitBranch, Languages, MessageSquare, Star } from "lucide-react";
 
 import { trpc } from "@/utils/trpc";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +66,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-3">
         <Link
           href={`/repo/${id}/onboarding` as never}
           className="group flex flex-col justify-between border border-neutral-700 bg-neutral-900 p-4 transition-colors duration-150 ease-out hover:bg-muted/50 active:scale-[0.99] motion-safe:transition-[background-color,transform]"
@@ -112,6 +112,28 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
                 ? `${repo.markdownTranslations.length} translation${repo.markdownTranslations.length === 1 ? "" : "s"} saved`
                 : "No translations yet"}
             </span>
+            <ArrowRight
+              className="size-3.5 text-muted-foreground transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
+
+        <Link
+          href={`/repo/${id}/chat` as never}
+          className="group flex flex-col justify-between border border-neutral-700 bg-neutral-900 p-4 transition-colors duration-150 ease-out hover:bg-muted/50 active:scale-[0.99] motion-safe:transition-[background-color,transform]"
+        >
+          <div>
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <MessageSquare className="size-4" aria-hidden="true" />
+              Chat with Repo
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Explore issues, PRs & get contribution help
+            </p>
+          </div>
+          <div className="mt-4 flex items-center justify-between">
+            <span className="text-xs tabular-nums text-muted-foreground">AI-powered assistant</span>
             <ArrowRight
               className="size-3.5 text-muted-foreground transition-transform duration-150 ease-out group-hover:translate-x-0.5"
               aria-hidden="true"
