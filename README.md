@@ -1,22 +1,21 @@
-# lingo bolt
+# lingo bolt 
 
-Lingo bolt helps you understand and localize GitHub repositories faster.
+Open source shouldn't have a language barrier. Lingo Bolt is for contributors who want to participate but struggle with the language, and for maintainers who need to manage issues and pull requests from people who don't speak their language.
 
-You connect your GitHub account, index a repository into a vector database, generate AI onboarding docs for that repo, and translate markdown files into other languages.
+Connect your GitHub repos, get AI onboarding docs in any language, translate markdown files, and let the bot handle in-repo translation and summarization — so the language gap stops being a blocker.
 
-## What the app does
+## Features
 
-- Auth with GitHub
-- Import and index public/private GitHub repositories
-- Generate AI onboarding documentation from indexed code
-- Save onboarding docs in multiple locales
-- Translate markdown files
-- Manage indexed repositories and related generated content
-- GitHub bot (lingo-bolt) for in-repo translation, summarization, and auto-labeling
+- **GitHub auth** — sign in with GitHub, import public or private repos
+- **Repo indexing** — indexes your codebase into a vector store for semantic search
+- **AI onboarding docs** — generate contributor-ready docs from your codebase in any selected language
+- **Markdown translation** — translate any markdown file in a repo, download as individual files or a ZIP
+- **AI chat** — ask questions about the repo, browse issues and PRs, find relevant code — all in your language
+- **GitHub bot** — install lingo-bolt on your org, and it auto-translates issues, summarizes threads, and labels by language
 
 ## lingo-bolt bot
 
-Install the GitHub App on your account or organization repos. Once installed, the bot responds to mentions in issues and pull requests.
+Install the GitHub App on your account or org. The bot responds to `@lingo-bolt` mentions in issues and PRs.
 
 ### Commands
 
@@ -24,13 +23,13 @@ Install the GitHub App on your account or organization repos. Once installed, th
 @lingo-bolt translate to spanish
 ```
 
-Translates the issue or PR body into the target language and posts a reply.
+Translates the issue or PR body and posts a reply.
 
 ```
 @lingo-bolt summarize
 ```
 
-Summarizes the issue or PR in the maintainer's default language (set in the bot dashboard).
+Summarizes in the maintainer's default language.
 
 ```
 @lingo-bolt summarize in french
@@ -40,27 +39,26 @@ Summarizes in a specific language.
 
 ### Automatic features
 
-- **Auto-label** — detects the language of new issues and adds a label like `lang:chinese` or `lang:english`
-- **Auto-translate** — when enabled, automatically translates new issues and comments into the maintainer's default language
+- **Auto-label** — detects the language of new issues and adds a label like `lang:chinese`
+- **Auto-translate** — translates new issues and comments into the maintainer's default language
 
-### Bot dashboard
-
-Go to `/bot` in the app to manage installations, set your default language, and toggle auto-translate and auto-label per installation.
+Manage installations and preferences at `/bot`.
 
 ## Tech stack
 
 - Next.js (App Router) + React 19
+- Lingo.dev API for translation
 - tRPC + TanStack Query
 - Better Auth
 - Prisma + PostgreSQL
 - Qdrant (vector store)
-- OpenAI (embeddings/content generation)
+- OpenAI (embeddings + generation)
 - Tailwind CSS + shadcn/ui
 - Turborepo + PNPM workspaces
 
 ## Monorepo structure
 
-```text
+```
 apps/web         Next.js app (UI + route handlers)
 packages/api     tRPC routers + indexing/retrieval logic
 packages/auth    Better Auth setup
@@ -79,8 +77,6 @@ packages/config  Shared TypeScript config
 - lingo.dev API key
 
 ## Environment variables
-
-Set these before running the app:
 
 - `DATABASE_URL`
 - `BETTER_AUTH_SECRET`

@@ -16,8 +16,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "lingo-dev",
-  description: "lingo-dev",
+  title: "Lingo Bolt — Translate, understand and manage any GitHub repo",
+  description:
+    "Lingo Bolt helps contributors participate and maintainers manage issues and PRs across languages — with AI onboarding docs, markdown translation, and a GitHub bot.",
+  keywords: [
+    "open source",
+    "translation",
+    "GitHub",
+    "localization",
+    "AI",
+    "onboarding docs",
+    "multilingual",
+    "contributor tools",
+  ],
+  openGraph: {
+    title: "Lingo Bolt — Translate, understand and manage any GitHub repo",
+    description:
+      "Helps contributors participate and maintainers manage issues and PRs across languages. AI onboarding docs, markdown translation, codebase chat, and a GitHub bot — all in your language.",
+    type: "website",
+    siteName: "Lingo Bolt",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lingo Bolt — Translate, understand and manage any GitHub repo",
+    description:
+      "Helps contributors participate and maintainers manage issues and PRs across languages. AI onboarding docs, markdown translation, codebase chat, and a GitHub bot — all in your language.",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +51,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

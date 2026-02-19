@@ -32,19 +32,19 @@ const PAGE_SIZE = 10;
 function IndexingProgress({ label, step, steps }: { label: string; step: number; steps: string[] }) {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-      <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 flex flex-col items-center justify-center gap-6">
-        <Spinner className="size-6" />
+      <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 flex flex-col items-center justify-center gap-7">
+        <Spinner className="size-8" />
         <div className="text-center">
           <p className="text-sm font-medium">{label}</p>
           <p className="mt-1 text-xs text-muted-foreground">{steps[step]}</p>
         </div>
-        <div className="flex w-full max-w-xs flex-col gap-2">
+        <div className="flex w-full max-w-xs flex-col gap-2.5">
           {steps.map((s, i) => (
-            <div key={s} className="flex items-center gap-2">
+            <div key={s} className="flex items-center gap-2.5">
               <div
-                className={`flex size-5 shrink-0 items-center justify-center border text-[10px] transition-colors duration-200 ease-out ${i < step ? "border-primary bg-primary text-primary-foreground" : i === step ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground bg-muted/50"}`}
+                className={`flex size-6 shrink-0 items-center justify-center border text-xs transition-colors duration-200 ease-out ${i < step ? "border-primary bg-primary text-primary-foreground" : i === step ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground bg-muted/50"}`}
               >
-                {i < step ? <Check className="size-3" /> : i + 1}
+                {i < step ? <Check className="size-3.5" /> : i + 1}
               </div>
               <span
                 className={`text-xs transition-colors duration-200 ease-out ${i <= step ? "text-foreground" : "text-muted-foreground"}`}
@@ -65,9 +65,12 @@ export default function NewRepoPage() {
   const [search, setSearch] = useState("");
   const [manualUrl, setManualUrl] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [isIndexing, setIsIndexing] = useState(false);
   const [indexingStep, setIndexingStep] = useState(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const stepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pendingRedirectRef = useRef<{ repositoryId?: string } | null>(null);
+  const redirectRef = useRef<((id?: string) => void) | null>(null);
   const { t } = useUiI18n();
   const indexingSteps = [
     t("newRepo.indexStep1"),
@@ -76,6 +79,12 @@ export default function NewRepoPage() {
     t("newRepo.indexStep4"),
     t("newRepo.indexStep5"),
   ];
+
+  redirectRef.current = (repositoryId?: string) => {
+    toast.success(t("newRepo.toastIndexSuccess"));
+    queryClient.invalidateQueries({ queryKey: trpc.repository.list.queryOptions().queryKey });
+    router.push(`/repo/${repositoryId}` as never);
+  };
 
   const { data: repos = [], isLoading: loadingRepos } = useQuery<GitHubRepo[]>({
     queryKey: ["github-repos"],
@@ -106,24 +115,38 @@ export default function NewRepoPage() {
       return data;
     },
     onMutate: () => {
+      pendingRedirectRef.current = null;
+      setIsIndexing(true);
       setIndexingStep(0);
       let step = 0;
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
       stepTimerRef.current = setInterval(() => {
         step++;
-        if (step < indexingSteps.length) setIndexingStep(step);
-      }, 4000);
+        const next = Math.min(step, indexingSteps.length - 1);
+        setIndexingStep(next);
+        if (step >= indexingSteps.length - 1) {
+          clearInterval(stepTimerRef.current!);
+          stepTimerRef.current = null;
+          if (pendingRedirectRef.current) {
+            redirectRef.current?.(pendingRedirectRef.current.repositoryId);
+          }
+        }
+      }, 2500);
     },
     onSuccess: (data) => {
-      if (stepTimerRef.current) clearInterval(stepTimerRef.current);
-      toast.success(t("newRepo.toastIndexSuccess"));
-      queryClient.invalidateQueries({
-        queryKey: trpc.repository.list.queryOptions().queryKey,
-      });
-      router.push(`/repo/${data.repositoryId}` as never);
+      if (stepTimerRef.current !== null) {
+        pendingRedirectRef.current = data;
+      } else {
+        redirectRef.current?.(data.repositoryId);
+      }
     },
     onError: (error) => {
-      if (stepTimerRef.current) clearInterval(stepTimerRef.current);
+      if (stepTimerRef.current) {
+        clearInterval(stepTimerRef.current);
+        stepTimerRef.current = null;
+      }
+      pendingRedirectRef.current = null;
+      setIsIndexing(false);
       toast.error(error.message);
     },
   });
@@ -167,7 +190,7 @@ export default function NewRepoPage() {
     indexMutation.mutate(trimmed);
   };
 
-  if (indexMutation.isPending) {
+  if (isIndexing) {
     const indexingRepo = repos.find((r) => r.url === indexMutation.variables);
     return (
       <IndexingProgress
