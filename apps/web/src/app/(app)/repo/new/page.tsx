@@ -104,7 +104,8 @@ export default function NewRepoPage() {
         repos?: GitHubRepo[];
         error?: string;
       };
-      if (!res.ok || !data.repos) throw new Error(data.error ?? "Failed to fetch repos");
+      if (!res.ok || !data.repos)
+        throw new Error(data.error ?? "Failed to fetch repos");
       return data.repos;
     },
   });
@@ -121,7 +122,8 @@ export default function NewRepoPage() {
         repositoryId?: string;
         error?: string;
       };
-      if (!res.ok || !data.success) throw new Error(data.error ?? "Failed to index repository");
+      if (!res.ok || !data.success)
+        throw new Error(data.error ?? "Failed to index repository");
       return data;
     },
     onMutate: () => {
@@ -165,7 +167,8 @@ export default function NewRepoPage() {
     const q = search.toLowerCase();
     return repos.filter(
       (r) =>
-        r.fullName.toLowerCase().includes(q) || (r.description?.toLowerCase().includes(q) ?? false),
+        r.fullName.toLowerCase().includes(q) ||
+        (r.description?.toLowerCase().includes(q) ?? false),
     );
   }, [repos, search]);
 
@@ -244,7 +247,10 @@ export default function NewRepoPage() {
         {loadingRepos ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 border border-border bg-card p-3">
+              <div
+                key={i}
+                className="flex items-center gap-3 border border-border bg-card p-3"
+              >
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-48" />
                   <Skeleton className="h-3 w-24" />
@@ -269,7 +275,9 @@ export default function NewRepoPage() {
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-medium">{repo.fullName}</span>
+                    <span className="truncate text-sm font-medium">
+                      {repo.fullName}
+                    </span>
                     {repo.isPrivate ? (
                       <Badge variant="outline" className="shrink-0 text-[10px]">
                         <Lock className="mr-0.5 size-2.5" aria-hidden="true" />
@@ -285,7 +293,10 @@ export default function NewRepoPage() {
                   <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                     {repo.language ? (
                       <span className="flex items-center gap-1">
-                        <span className="size-2 bg-primary" aria-hidden="true" />
+                        <span
+                          className="size-2 bg-primary"
+                          aria-hidden="true"
+                        />
                         {repo.language}
                       </span>
                     ) : null}
@@ -314,7 +325,11 @@ export default function NewRepoPage() {
             className="flex-1 border border-neutral-600"
           />
           <Button type="submit" disabled={indexMutation.isPending}>
-            {indexMutation.isPending ? <Spinner className="size-3.5" /> : t("newRepo.index")}
+            {indexMutation.isPending ? (
+              <Spinner className="size-3.5" />
+            ) : (
+              t("newRepo.index")
+            )}
           </Button>
         </form>
       </section>

@@ -52,11 +52,14 @@ const LANGUAGES = [
   { value: "pl", label: "Polish" },
 ] as const;
 
-const GITHUB_APP_INSTALL_URL = "https://github.com/apps/lingo-bolt/installations/new";
+const GITHUB_APP_INSTALL_URL =
+  "https://github.com/apps/lingo-bolt/installations/new";
 
 export default function BotDashboardPage() {
   const queryClient = useQueryClient();
-  const { data: installations, isLoading } = useQuery(trpc.bot.list.queryOptions());
+  const { data: installations, isLoading } = useQuery(
+    trpc.bot.list.queryOptions(),
+  );
   const { t } = useUiI18n();
 
   const updateMutation = useMutation(
@@ -78,8 +81,12 @@ export default function BotDashboardPage() {
   return (
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6 pt-6 pb-10">
       <div>
-        <h1 className="text-lg font-semibold tracking-tight text-pretty">lingo-bolt</h1>
-        <p className="mt-1 text-xs text-muted-foreground">{t("bot.subtitle")}</p>
+        <h1 className="text-lg font-semibold tracking-tight text-pretty">
+          lingo-bolt
+        </h1>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {t("bot.subtitle")}
+        </p>
         <div className="mt-3 flex items-center gap-3">
           <Badge variant="outline" className="text-[10px]">
             {t("bot.githubApp")}
@@ -102,7 +109,9 @@ export default function BotDashboardPage() {
               <Bot className="size-4" aria-hidden="true" />
               {t("bot.installations")}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">{t("bot.manageSettings")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("bot.manageSettings")}
+            </p>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs tabular-nums text-muted-foreground">
@@ -114,8 +123,16 @@ export default function BotDashboardPage() {
                 t("bot.notInstalled")
               )}
             </span>
-            <a href={GITHUB_APP_INSTALL_URL} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" variant="outline" className="h-6 gap-1 px-2 text-[10px]">
+            <a
+              href={GITHUB_APP_INSTALL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 gap-1 px-2 text-[10px]"
+              >
                 <ExternalLink className="size-3" aria-hidden="true" />
                 {t("bot.addToGithub")}
               </Button>
@@ -129,7 +146,9 @@ export default function BotDashboardPage() {
               <Languages className="size-4" aria-hidden="true" />
               {t("bot.commands")}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">{t("bot.mentionDescription")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("bot.mentionDescription")}
+            </p>
           </div>
           <div className="mt-4 space-y-1">
             <code className="block text-[10px] font-mono text-muted-foreground">
@@ -144,10 +163,15 @@ export default function BotDashboardPage() {
 
       {isLoading ? (
         <section>
-          <h2 className="mb-3 text-sm font-semibold">{t("bot.installations")}</h2>
+          <h2 className="mb-3 text-sm font-semibold">
+            {t("bot.installations")}
+          </h2>
           <div className="space-y-2">
             {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="border border-neutral-700 bg-neutral-900 p-4 space-y-3">
+              <div
+                key={i}
+                className="border border-neutral-700 bg-neutral-900 p-4 space-y-3"
+              >
                 <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-3 w-56" />
                 <Skeleton className="h-7 w-28" />
@@ -159,10 +183,18 @@ export default function BotDashboardPage() {
         <div className="flex flex-col items-center justify-center gap-3 border border-dashed border-border py-16 text-center motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300">
           <Bot className="size-6 text-muted-foreground" aria-hidden="true" />
           <div className="space-y-1">
-            <p className="text-sm font-medium">{t("bot.noInstallationsTitle")}</p>
-            <p className="text-xs text-muted-foreground">{t("bot.noInstallationsSubtitle")}</p>
+            <p className="text-sm font-medium">
+              {t("bot.noInstallationsTitle")}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t("bot.noInstallationsSubtitle")}
+            </p>
           </div>
-          <a href={GITHUB_APP_INSTALL_URL} target="_blank" rel="noopener noreferrer">
+          <a
+            href={GITHUB_APP_INSTALL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Button size="sm" variant="outline" className="mt-1">
               <ExternalLink className="size-3.5" aria-hidden="true" />
               {t("bot.addToGithub")}
@@ -171,13 +203,17 @@ export default function BotDashboardPage() {
         </div>
       ) : (
         <section>
-          <h2 className="mb-3 text-sm font-semibold">{t("bot.installations")}</h2>
+          <h2 className="mb-3 text-sm font-semibold">
+            {t("bot.installations")}
+          </h2>
           <div className="space-y-1.5 stagger-fade-in">
             {installations!.map((inst) => (
               <InstallationCard
                 key={inst.id}
                 installation={inst}
-                onUpdate={(data) => updateMutation.mutate({ id: inst.id, ...data })}
+                onUpdate={(data) =>
+                  updateMutation.mutate({ id: inst.id, ...data })
+                }
                 isPending={updateMutation.isPending}
               />
             ))}
@@ -187,17 +223,27 @@ export default function BotDashboardPage() {
 
       <section>
         <h2 className="mb-1 text-sm font-semibold">{t("bot.reference")}</h2>
-        <p className="mb-3 text-[11px] text-muted-foreground">{t("bot.referenceSubtitle")}</p>
+        <p className="mb-3 text-[11px] text-muted-foreground">
+          {t("bot.referenceSubtitle")}
+        </p>
         <div className="space-y-1.5 stagger-fade-in">
           <div className="border border-neutral-700 bg-neutral-900 px-4 py-3">
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="size-3.5 text-muted-foreground" aria-hidden="true" />
+              <Sparkles
+                className="size-3.5 text-muted-foreground"
+                aria-hidden="true"
+              />
               <span className="text-xs font-medium">{t("bot.autoTitle")}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground mb-3 pl-5">{t("bot.autoSubtitle")}</p>
+            <p className="text-[11px] text-muted-foreground mb-3 pl-5">
+              {t("bot.autoSubtitle")}
+            </p>
             <div className="space-y-3 pl-5">
               <div className="flex items-start gap-3">
-                <Tags className="size-3 mt-0.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                <Tags
+                  className="size-3 mt-0.5 shrink-0 text-muted-foreground"
+                  aria-hidden="true"
+                />
                 <div>
                   <span className="text-xs font-medium text-foreground">
                     {t("bot.languageDetection")}
@@ -226,7 +272,10 @@ export default function BotDashboardPage() {
 
           <div className="border border-neutral-700 bg-neutral-900 px-4 py-3">
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="size-3.5 text-muted-foreground" aria-hidden="true" />
+              <Zap
+                className="size-3.5 text-muted-foreground"
+                aria-hidden="true"
+              />
               <span className="text-xs font-medium">{t("bot.commands")}</span>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3 pl-5">
@@ -256,8 +305,13 @@ export default function BotDashboardPage() {
 
           <div className="border border-neutral-700 bg-neutral-900 px-4 py-3">
             <div className="flex items-center gap-2 mb-1">
-              <Bot className="size-3.5 text-muted-foreground" aria-hidden="true" />
-              <span className="text-xs font-medium">{t("bot.customization")}</span>
+              <Bot
+                className="size-3.5 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span className="text-xs font-medium">
+                {t("bot.customization")}
+              </span>
             </div>
             <p className="text-[11px] text-muted-foreground pl-5">
               {t("bot.customizationDescription")}
@@ -269,10 +323,18 @@ export default function BotDashboardPage() {
   );
 }
 
-function ReferenceRow({ command, description }: { command: string; description: string }) {
+function ReferenceRow({
+  command,
+  description,
+}: {
+  command: string;
+  description: string;
+}) {
   return (
     <div className="flex items-center gap-3">
-      <code className="shrink-0 font-mono text-[10px] text-foreground">{command}</code>
+      <code className="shrink-0 font-mono text-[10px] text-foreground">
+        {command}
+      </code>
       <span className="text-[10px] text-muted-foreground">— {description}</span>
     </div>
   );
@@ -328,7 +390,9 @@ function InstallationCard({
   const { data: reposData } = useQuery<{ repos: GHRepo[] }>({
     queryKey: ["bot-repos", installation.installationId],
     queryFn: async () => {
-      const res = await fetch(`/api/bot/repos?installationId=${installation.installationId}`);
+      const res = await fetch(
+        `/api/bot/repos?installationId=${installation.installationId}`,
+      );
       if (!res.ok) throw new Error(t("bot.failedFetchRepos"));
       return res.json() as Promise<{ repos: GHRepo[] }>;
     },
@@ -337,7 +401,9 @@ function InstallationCard({
 
   const repos = reposData?.repos ?? [];
   const configuredRepos = new Set(repoConfigs?.map((c) => c.repoFullName));
-  const unconfiguredRepos = repos.filter((r) => !configuredRepos.has(r.fullName));
+  const unconfiguredRepos = repos.filter(
+    (r) => !configuredRepos.has(r.fullName),
+  );
 
   const invalidateConfigs = () => {
     queryClient.invalidateQueries({
@@ -380,11 +446,19 @@ function InstallationCard({
       >
         <div className="flex items-center gap-2">
           {installation.accountType === "Organization" ? (
-            <Building2 className="size-3.5 text-muted-foreground" aria-hidden="true" />
+            <Building2
+              className="size-3.5 text-muted-foreground"
+              aria-hidden="true"
+            />
           ) : (
-            <User className="size-3.5 text-muted-foreground" aria-hidden="true" />
+            <User
+              className="size-3.5 text-muted-foreground"
+              aria-hidden="true"
+            />
           )}
-          <span className="text-sm font-medium">{installation.accountLogin}</span>
+          <span className="text-sm font-medium">
+            {installation.accountLogin}
+          </span>
           <Badge variant="outline" className="text-[10px]">
             {installation.accountType}
           </Badge>
@@ -411,12 +485,19 @@ function InstallationCard({
                 onUpdate({ defaultLanguage: val });
               }}
             >
-              <SelectTrigger id={`lang-${installation.id}`} className="h-7 w-36 text-xs">
+              <SelectTrigger
+                id={`lang-${installation.id}`}
+                className="h-7 w-36 text-xs"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {LANGUAGES.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value} className="text-xs">
+                  <SelectItem
+                    key={lang.value}
+                    value={lang.value}
+                    className="text-xs"
+                  >
                     {lang.label}
                   </SelectItem>
                 ))}
@@ -426,7 +507,10 @@ function InstallationCard({
 
           <div className="flex items-center justify-between py-3">
             <div>
-              <Label htmlFor={`auto-translate-${installation.id}`} className="text-xs font-normal">
+              <Label
+                htmlFor={`auto-translate-${installation.id}`}
+                className="text-xs font-normal"
+              >
                 {t("bot.autoTranslate")}
               </Label>
               <p className="text-[10px] text-muted-foreground">
@@ -436,14 +520,19 @@ function InstallationCard({
             <Switch
               id={`auto-translate-${installation.id}`}
               checked={installation.autoTranslate}
-              onCheckedChange={(checked) => onUpdate({ autoTranslate: !!checked })}
+              onCheckedChange={(checked) =>
+                onUpdate({ autoTranslate: !!checked })
+              }
               disabled={isPending}
             />
           </div>
 
           <div className="flex items-center justify-between py-3">
             <div>
-              <Label htmlFor={`auto-label-${installation.id}`} className="text-xs font-normal">
+              <Label
+                htmlFor={`auto-label-${installation.id}`}
+                className="text-xs font-normal"
+              >
                 {t("bot.languageDetection")}
               </Label>
               <p className="text-[10px] text-muted-foreground">
@@ -465,12 +554,23 @@ function InstallationCard({
               className="flex w-full items-center gap-2 text-left"
             >
               {repoSectionOpen ? (
-                <ChevronDown className="size-3 text-muted-foreground" aria-hidden="true" />
+                <ChevronDown
+                  className="size-3 text-muted-foreground"
+                  aria-hidden="true"
+                />
               ) : (
-                <ChevronRight className="size-3 text-muted-foreground" aria-hidden="true" />
+                <ChevronRight
+                  className="size-3 text-muted-foreground"
+                  aria-hidden="true"
+                />
               )}
-              <GitBranch className="size-3 text-muted-foreground" aria-hidden="true" />
-              <span className="text-xs font-medium">{t("bot.perRepoOverrides")}</span>
+              <GitBranch
+                className="size-3 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span className="text-xs font-medium">
+                {t("bot.perRepoOverrides")}
+              </span>
               {repoConfigs && repoConfigs.length > 0 && (
                 <Badge variant="outline" className="text-[10px]">
                   {repoConfigs.length}
@@ -498,7 +598,9 @@ function InstallationCard({
                         repoFullName: config.repoFullName,
                       })
                     }
-                    isPending={upsertMutation.isPending || deleteMutation.isPending}
+                    isPending={
+                      upsertMutation.isPending || deleteMutation.isPending
+                    }
                   />
                 ))}
 
@@ -558,8 +660,10 @@ function RepoConfigRow({
   isPending: boolean;
 }) {
   const { t } = useUiI18n();
-  const effectiveLang = config.defaultLanguage ?? installationDefaults.defaultLanguage;
-  const effectiveTranslate = config.autoTranslate ?? installationDefaults.autoTranslate;
+  const effectiveLang =
+    config.defaultLanguage ?? installationDefaults.defaultLanguage;
+  const effectiveTranslate =
+    config.autoTranslate ?? installationDefaults.autoTranslate;
   const effectiveLabel = config.autoLabel ?? installationDefaults.autoLabel;
   const [expanded, setExpanded] = useState(false);
 
@@ -571,10 +675,16 @@ function RepoConfigRow({
           onClick={() => setExpanded((v) => !v)}
           className="flex flex-1 items-center gap-2 text-left"
         >
-          <GitBranch className="size-3 text-muted-foreground" aria-hidden="true" />
-          <span className="text-xs font-medium">{config.repoFullName.split("/")[1]}</span>
+          <GitBranch
+            className="size-3 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <span className="text-xs font-medium">
+            {config.repoFullName.split("/")[1]}
+          </span>
           <span className="text-[10px] text-muted-foreground">
-            {LANGUAGES.find((l) => l.value === effectiveLang)?.label ?? effectiveLang}
+            {LANGUAGES.find((l) => l.value === effectiveLang)?.label ??
+              effectiveLang}
           </span>
         </button>
         <div className="flex items-center gap-1.5">
@@ -591,7 +701,11 @@ function RepoConfigRow({
             onClick={() => setExpanded((v) => !v)}
             className="p-1 text-muted-foreground"
           >
-            {expanded ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+            {expanded ? (
+              <ChevronDown className="size-3" />
+            ) : (
+              <ChevronRight className="size-3" />
+            )}
           </button>
         </div>
       </div>
@@ -599,13 +713,16 @@ function RepoConfigRow({
       {expanded && (
         <div className="divide-y divide-neutral-700/50 border-t border-neutral-700/50 px-3">
           <div className="flex items-center justify-between py-2">
-            <span className="text-[10px] text-muted-foreground">{t("common.selectLanguage")}</span>
+            <span className="text-[10px] text-muted-foreground">
+              {t("common.selectLanguage")}
+            </span>
             <Select
               value={effectiveLang}
               onValueChange={(val) => {
                 if (!val) return;
                 onUpdate({
-                  defaultLanguage: val === installationDefaults.defaultLanguage ? null : val,
+                  defaultLanguage:
+                    val === installationDefaults.defaultLanguage ? null : val,
                 });
               }}
             >
@@ -614,7 +731,11 @@ function RepoConfigRow({
               </SelectTrigger>
               <SelectContent>
                 {LANGUAGES.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value} className="text-xs">
+                  <SelectItem
+                    key={lang.value}
+                    value={lang.value}
+                    className="text-xs"
+                  >
                     {lang.label}
                   </SelectItem>
                 ))}
@@ -623,12 +744,17 @@ function RepoConfigRow({
           </div>
 
           <div className="flex items-center justify-between py-2">
-            <span className="text-[10px] text-muted-foreground">{t("bot.autoTranslate")}</span>
+            <span className="text-[10px] text-muted-foreground">
+              {t("bot.autoTranslate")}
+            </span>
             <Switch
               checked={effectiveTranslate}
               onCheckedChange={(checked) =>
                 onUpdate({
-                  autoTranslate: checked === installationDefaults.autoTranslate ? null : !!checked,
+                  autoTranslate:
+                    checked === installationDefaults.autoTranslate
+                      ? null
+                      : !!checked,
                 })
               }
               disabled={isPending}
@@ -637,12 +763,17 @@ function RepoConfigRow({
           </div>
 
           <div className="flex items-center justify-between py-2">
-            <span className="text-[10px] text-muted-foreground">{t("bot.languageDetection")}</span>
+            <span className="text-[10px] text-muted-foreground">
+              {t("bot.languageDetection")}
+            </span>
             <Switch
               checked={effectiveLabel}
               onCheckedChange={(checked) =>
                 onUpdate({
-                  autoLabel: checked === installationDefaults.autoLabel ? null : !!checked,
+                  autoLabel:
+                    checked === installationDefaults.autoLabel
+                      ? null
+                      : !!checked,
                 })
               }
               disabled={isPending}
@@ -673,13 +804,20 @@ function AddRepoOverride({
 
   return (
     <div className="flex items-center gap-2">
-      <Select value={selectedRepo} onValueChange={(val) => setSelectedRepo(val ?? "")}>
+      <Select
+        value={selectedRepo}
+        onValueChange={(val) => setSelectedRepo(val ?? "")}
+      >
         <SelectTrigger className="h-7 flex-1 text-[10px]">
           <SelectValue placeholder={t("bot.selectRepositoryPlaceholder")} />
         </SelectTrigger>
         <SelectContent>
           {repos.map((repo) => (
-            <SelectItem key={repo.fullName} value={repo.fullName} className="text-xs">
+            <SelectItem
+              key={repo.fullName}
+              value={repo.fullName}
+              className="text-xs"
+            >
               {repo.name}
             </SelectItem>
           ))}

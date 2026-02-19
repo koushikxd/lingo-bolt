@@ -65,19 +65,19 @@
   --card-foreground: oklch(0.94 0 0);
   --popover: oklch(0.22 0 0);
   --popover-foreground: oklch(0.94 0 0);
-  --primary: oklch(0.7737 0.1629 60.2762);
-  --primary-foreground: oklch(0.2319 0.0525 64.0125);
+  --primary: oklch(0.7 0.15 150);
+  --primary-foreground: oklch(0.32 0 0);
   --secondary: oklch(0.27 0 0);
   --secondary-foreground: oklch(0.94 0 0);
   --muted: oklch(0.24 0 0);
   --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.2601 0.0452 64.6807);
-  --accent-foreground: oklch(0.7204 0.1833 52.8311);
+  --accent: oklch(0.27 0 0);
+  --accent-foreground: oklch(0.7 0.15 150);
   --destructive: oklch(0.6453 0.2404 27.3106);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.32 0 0);
   --input: oklch(0.27 0 0);
-  --ring: oklch(0.7204 0.1833 52.8311);
+  --ring: oklch(0.7 0.15 150);
   --chart-1: oklch(0.7204 0.1833 52.8311);
   --chart-2: oklch(0.8158 0.199 152.4085);
   --chart-3: oklch(0.6693 0.1427 250.8035);
@@ -85,12 +85,12 @@
   --chart-5: oklch(0.7195 0.1514 120.9159);
   --sidebar: #1a1a1a;
   --sidebar-foreground: oklch(0.94 0 0);
-  --sidebar-primary: oklch(0.7204 0.1833 52.8311);
-  --sidebar-primary-foreground: oklch(0.2319 0.0525 64.0125);
-  --sidebar-accent: oklch(0.2601 0.0452 64.6807);
-  --sidebar-accent-foreground: oklch(0.7204 0.1833 52.8311);
+  --sidebar-primary: oklch(0.7 0.15 150);
+  --sidebar-primary-foreground: oklch(0.32 0 0);
+  --sidebar-accent: oklch(0.27 0 0);
+  --sidebar-accent-foreground: oklch(0.7 0.15 150);
   --sidebar-border: oklch(0.3 0 0);
-  --sidebar-ring: oklch(0.7204 0.1833 52.8311);
+  --sidebar-ring: oklch(0.7 0.15 150);
   --font-sans: Plus Jakarta Sans, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Bricolage Grotesque, ui-sans-serif, sans-serif, system-ui;
   --font-mono: Anonymous Pro, ui-monospace, monospace;
@@ -174,7 +174,8 @@
 @utility stagger-fade-in {
   & > * {
     opacity: 0;
-    animation: fade-slide-in 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+    animation: fade-slide-in 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)
+      backwards;
   }
   & > *:nth-child(1) {
     animation-delay: 0ms;

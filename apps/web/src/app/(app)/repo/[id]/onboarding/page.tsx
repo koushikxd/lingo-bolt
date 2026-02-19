@@ -29,7 +29,12 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +46,13 @@ const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 type GenerateState = "idle" | "generating" | "translating" | "done";
 
-function GenerationStatusBar({ state, locale }: { state: GenerateState; locale: string }) {
+function GenerationStatusBar({
+  state,
+  locale,
+}: {
+  state: GenerateState;
+  locale: string;
+}) {
   const { t } = useUiI18n();
   if (state === "idle" || state === "done") return null;
 
@@ -52,7 +63,9 @@ function GenerationStatusBar({ state, locale }: { state: GenerateState; locale: 
       <Loader2 className="size-3.5 animate-spin text-primary" />
       <div className="flex items-center gap-2 text-xs">
         <span className="font-medium text-foreground">
-          {state === "generating" ? t("common.generating") : t("common.translating")}
+          {state === "generating"
+            ? t("common.generating")
+            : t("common.translating")}
         </span>
         {state === "translating" && (
           <Badge variant="outline" className="text-[10px] font-normal">
@@ -74,7 +87,11 @@ function GenerationStatusBar({ state, locale }: { state: GenerateState; locale: 
   );
 }
 
-export default function OnboardingPage({ params }: { params: Promise<{ id: string }> }) {
+export default function OnboardingPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const queryClient = useQueryClient();
   const { t } = useUiI18n();
@@ -104,7 +121,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
     : null;
 
   const displayContent =
-    state !== "idle" ? streamContent : (selectedDoc?.content ?? latestDoc?.content ?? "");
+    state !== "idle"
+      ? streamContent
+      : (selectedDoc?.content ?? latestDoc?.content ?? "");
   const hasNoDocs = repo && repo.onboardingDocs.length === 0;
 
   const handleRegenerate = useCallback(async () => {
@@ -207,7 +226,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
     return (
       <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2 motion-safe:animate-in motion-safe:fade-in duration-300">
         <BookOpen className="size-8 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("common.repositoryNotFound")}
+        </p>
       </div>
     );
   }
@@ -239,13 +260,17 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                   })}
                 >
                   <span className="text-xs">
-                    {LANGUAGES.find((l) => l.code === (selectedDoc?.locale ?? latestDoc?.locale))
-                      ?.label ?? "English"}
+                    {LANGUAGES.find(
+                      (l) =>
+                        l.code === (selectedDoc?.locale ?? latestDoc?.locale),
+                    )?.label ?? "English"}
                   </span>
                   <span className="text-[10px] text-muted-foreground">
                     {t("onboarding.versionShort", {
                       version: selectedDocId
-                        ? repo.onboardingDocs.findIndex((d) => d.id === selectedDocId) + 1
+                        ? repo.onboardingDocs.findIndex(
+                            (d) => d.id === selectedDocId,
+                          ) + 1
                         : repo.onboardingDocs.length,
                     })}
                   </span>
@@ -264,7 +289,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                     >
                       <div className="flex items-center gap-2 w-full justify-between">
                         <span className="font-medium">
-                          {LANGUAGES.find((l) => l.code === doc.locale)?.label ?? doc.locale}
+                          {LANGUAGES.find((l) => l.code === doc.locale)
+                            ?.label ?? doc.locale}
                         </span>
                         {doc.id === (selectedDocId ?? latestDoc?.id) && (
                           <Check className="size-3" />
@@ -272,7 +298,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                       </div>
                       <span className="text-[10px] text-muted-foreground">
                         {new Date(doc.createdAt).toLocaleDateString()} •{" "}
-                        {t("onboarding.versionLabel", { version: repo.onboardingDocs.length - i })}
+                        {t("onboarding.versionLabel", {
+                          version: repo.onboardingDocs.length - i,
+                        })}
                       </span>
                     </DropdownMenuItem>
                   ))}
@@ -290,7 +318,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                   })}
                 >
                   <RefreshCw className="size-3.5" />
-                  <span className="hidden sm:inline">{t("onboarding.regenerate")}</span>
+                  <span className="hidden sm:inline">
+                    {t("onboarding.regenerate")}
+                  </span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 p-3">
                   <div className="space-y-3">
@@ -306,14 +336,20 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                       <Select
                         value={locale}
                         onValueChange={(val) => val && setLocale(val)}
-                        disabled={state === "generating" || state === "translating"}
+                        disabled={
+                          state === "generating" || state === "translating"
+                        }
                       >
                         <SelectTrigger className="h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {LANGUAGES.map((lang) => (
-                            <SelectItem key={lang.code} value={lang.code} className="text-xs">
+                            <SelectItem
+                              key={lang.code}
+                              value={lang.code}
+                              className="text-xs"
+                            >
                               {lang.label}
                             </SelectItem>
                           ))}
@@ -323,7 +359,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                         size="sm"
                         className="w-full h-7 text-xs"
                         onClick={handleRegenerate}
-                        disabled={state === "generating" || state === "translating"}
+                        disabled={
+                          state === "generating" || state === "translating"
+                        }
                       >
                         {state === "generating" ? (
                           <>
@@ -337,7 +375,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                           </>
                         ) : (
                           <>
-                            <Sparkles className="mr-2 size-3" /> {t("common.generate")}
+                            <Sparkles className="mr-2 size-3" />{" "}
+                            {t("common.generate")}
                           </>
                         )}
                       </Button>
@@ -381,23 +420,38 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                 <Sparkles className="size-6 text-primary" />
               </div>
               <div className="space-y-2 max-w-sm">
-                <h3 className="text-base font-semibold">{t("onboarding.noDocsYet")}</h3>
-                <p className="text-sm text-muted-foreground">{t("onboarding.noDocsSubtitle")}</p>
+                <h3 className="text-base font-semibold">
+                  {t("onboarding.noDocsYet")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("onboarding.noDocsSubtitle")}
+                </p>
               </div>
               <div className="flex items-center gap-2 w-full max-w-xs">
-                <Select value={locale} onValueChange={(val) => val && setLocale(val)}>
+                <Select
+                  value={locale}
+                  onValueChange={(val) => val && setLocale(val)}
+                >
                   <SelectTrigger className="h-9 text-xs flex-1 bg-background">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {LANGUAGES.map((lang) => (
-                      <SelectItem key={lang.code} value={lang.code} className="text-xs">
+                      <SelectItem
+                        key={lang.code}
+                        value={lang.code}
+                        className="text-xs"
+                      >
                         {lang.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Button size="sm" onClick={handleRegenerate} className="h-9 px-4 text-xs">
+                <Button
+                  size="sm"
+                  onClick={handleRegenerate}
+                  className="h-9 px-4 text-xs"
+                >
                   {t("common.generate")}
                 </Button>
               </div>
@@ -407,7 +461,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
               ref={docRef}
               className={`${PROSE_CLASSES} motion-safe:animate-in motion-safe:fade-in duration-300`}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {displayContent}
+              </ReactMarkdown>
             </article>
           )}
         </div>

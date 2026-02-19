@@ -1,7 +1,14 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Bot, ChevronsUpDown, Globe, Languages, LogOut, Plus } from "lucide-react";
+import {
+  Bot,
+  ChevronsUpDown,
+  Globe,
+  Languages,
+  LogOut,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -59,7 +66,9 @@ function buildBreadcrumbs(
       | "appShell.breadcrumb.chat",
   ) => string,
 ): BreadcrumbEntry[] {
-  const crumbs: BreadcrumbEntry[] = [{ label: translate("common.repositories"), href: "/" }];
+  const crumbs: BreadcrumbEntry[] = [
+    { label: translate("common.repositories"), href: "/" },
+  ];
 
   if (pathname === "/") return crumbs;
 
@@ -94,7 +103,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
-  const { data: repos, isLoading: loadingRepos } = useQuery(trpc.repository.list.queryOptions());
+  const { data: repos, isLoading: loadingRepos } = useQuery(
+    trpc.repository.list.queryOptions(),
+  );
   const { data: prefs } = useQuery(trpc.user.getPreferences.queryOptions());
   const { t } = useUiI18n();
   const [langPickerOpen, setLangPickerOpen] = useState(() => {
@@ -110,7 +121,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const repoIdMatch = pathname.match(/^\/repo\/([^/]+)/);
   const activeRepoId = repoIdMatch?.[1] !== "new" ? repoIdMatch?.[1] : null;
-  const activeRepo = activeRepoId ? repos?.find((r) => r.id === activeRepoId) : null;
+  const activeRepo = activeRepoId
+    ? repos?.find((r) => r.id === activeRepoId)
+    : null;
   const breadcrumbs = buildBreadcrumbs(pathname, activeRepo, t);
 
   return (
@@ -123,7 +136,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center">
                   <Globe className="size-3.5" aria-hidden="true" />
                 </div>
-                <span className="text-sm font-semibold tracking-tight">lingo bolt</span>
+                <span className="text-sm font-semibold tracking-tight">
+                  lingo bolt
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -199,26 +214,40 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     }
                   >
                     <Avatar size="sm">
-                      <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
+                      <AvatarImage
+                        src={session.user.image ?? undefined}
+                        alt={session.user.name}
+                      />
                       <AvatarFallback className="text-[10px]">
                         {session.user.name?.charAt(0).toUpperCase() ?? "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate text-xs font-medium">{session.user.name}</span>
+                      <span className="truncate text-xs font-medium">
+                        {session.user.name}
+                      </span>
                       <span className="truncate text-[10px] text-muted-foreground">
                         {session.user.email
                           ? (() => {
-                              const [local, domain] = session.user.email.split("@");
+                              const [local, domain] =
+                                session.user.email.split("@");
                               const half = Math.ceil((local ?? "").length / 1);
                               return `${"*".repeat(half)}${(local ?? "").slice(half)}@${domain}`;
                             })()
                           : ""}
                       </span>
                     </div>
-                    <ChevronsUpDown className="ml-auto size-4" aria-hidden="true" />
+                    <ChevronsUpDown
+                      className="ml-auto size-4"
+                      aria-hidden="true"
+                    />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" side="top" align="end" sideOffset={4}>
+                  <DropdownMenuContent
+                    className="w-56"
+                    side="top"
+                    align="end"
+                    sideOffset={4}
+                  >
                     <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
                       <Avatar size="sm">
                         <AvatarImage
@@ -230,12 +259,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate text-xs font-medium">{session.user.name}</span>
+                        <span className="truncate text-xs font-medium">
+                          {session.user.name}
+                        </span>
                         <span className="truncate text-[10px] text-muted-foreground">
                           {session.user.email
                             ? (() => {
-                                const [local, domain] = session.user.email.split("@");
-                                const half = Math.ceil((local ?? "").length / 1);
+                                const [local, domain] =
+                                  session.user.email.split("@");
+                                const half = Math.ceil(
+                                  (local ?? "").length / 1,
+                                );
                                 return `${"*".repeat(half)}${(local ?? "").slice(half)}@${domain}`;
                               })()
                             : ""}
@@ -260,7 +294,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" aria-label={t("appShell.toggleSidebar")} />
+          <SidebarTrigger
+            className="-ml-1"
+            aria-label={t("appShell.toggleSidebar")}
+          />
           <Separator orientation="vertical" className="mr-2 h-4!" />
           <Breadcrumb>
             <BreadcrumbList>
@@ -272,7 +309,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     {isLast || !crumb.href ? (
                       <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink render={<Link href={crumb.href as never} />}>
+                      <BreadcrumbLink
+                        render={<Link href={crumb.href as never} />}
+                      >
                         {crumb.label}
                       </BreadcrumbLink>
                     )}

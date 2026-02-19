@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 
 import { trpc } from "@/utils/trpc";
-import { PROSE_CLASSES, TRANSLATION_LANGUAGES, LANGUAGES } from "@/lib/constants";
+import {
+  PROSE_CLASSES,
+  TRANSLATION_LANGUAGES,
+  LANGUAGES,
+} from "@/lib/constants";
 import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -52,21 +56,33 @@ const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 type TranslatedFile = { path: string; content: string };
 
-export default function MarkdownPage({ params }: { params: Promise<{ id: string }> }) {
+export default function MarkdownPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const queryClient = useQueryClient();
   const { t } = useUiI18n();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: repo, isLoading } = useQuery(trpc.repository.getById.queryOptions({ id }));
+  const { data: repo, isLoading } = useQuery(
+    trpc.repository.getById.queryOptions({ id }),
+  );
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [locale, setLocale] = useState("es");
-  const [viewMode, setViewMode] = useState<"original" | "translated">("original");
-  const [historyView, setHistoryView] = useState<{ content: string; locale: string } | null>(null);
+  const [viewMode, setViewMode] = useState<"original" | "translated">(
+    "original",
+  );
+  const [historyView, setHistoryView] = useState<{
+    content: string;
+    locale: string;
+  } | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  const isIndexed = repo?.status === "indexed" && (repo?.chunksIndexed ?? 0) > 0;
+  const isIndexed =
+    repo?.status === "indexed" && (repo?.chunksIndexed ?? 0) > 0;
 
   const { data: mdFiles = [], isLoading: loadingFiles } = useQuery({
     queryKey: [id, "md-files"],
@@ -82,7 +98,9 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
     enabled: isIndexed,
   });
 
-  const filteredFiles = mdFiles.filter((f) => f.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredFiles = mdFiles.filter((f) =>
+    f.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const { data: fileContent = "", isLoading: loadingContent } = useQuery({
     queryKey: [id, "md-content", selectedFile],
@@ -140,11 +158,15 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
         error?: string;
       };
       if (!res.ok || !data.files)
-        throw new Error(data.error ?? t("markdown.toastBatchTranslationFailed"));
+        throw new Error(
+          data.error ?? t("markdown.toastBatchTranslationFailed"),
+        );
       return data.files;
     },
     onSuccess: (files) => {
-      toast.success(t("markdown.toastBatchTranslated", { count: files.length }));
+      toast.success(
+        t("markdown.toastBatchTranslated", { count: files.length }),
+      );
       queryClient.invalidateQueries({
         queryKey: trpc.repository.getById.queryOptions({ id }).queryKey,
       });
@@ -161,7 +183,11 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
     setViewMode("original");
   };
 
-  const handleViewHistoryFile = (filePath: string, content: string, historyLocale: string) => {
+  const handleViewHistoryFile = (
+    filePath: string,
+    content: string,
+    historyLocale: string,
+  ) => {
     setSelectedFile(filePath);
     translateFileMutation.reset();
     setHistoryView({ content, locale: historyLocale });
@@ -169,15 +195,18 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
     setHistoryOpen(false);
   };
 
-  const handleDownloadFile = useCallback((content: string, filename: string) => {
-    const blob = new Blob([content], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, []);
+  const handleDownloadFile = useCallback(
+    (content: string, filename: string) => {
+      const blob = new Blob([content], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+    [],
+  );
 
   const handleDownloadZip = useCallback(
     async (files: TranslatedFile[], translationLocale: string) => {
@@ -198,7 +227,8 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
     [repo?.name],
   );
 
-  const translatedContent = translateFileMutation.data ?? historyView?.content ?? "";
+  const translatedContent =
+    translateFileMutation.data ?? historyView?.content ?? "";
   const isTranslating = translateFileMutation.isPending;
 
   if (isLoading) {
@@ -213,7 +243,9 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
     return (
       <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2 motion-safe:animate-in motion-safe:fade-in duration-300">
         <FileCode className="size-8 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("common.repositoryNotFound")}
+        </p>
       </div>
     );
   }
@@ -223,7 +255,10 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
       <div className="flex w-64 flex-col border-r bg-card/50">
         <div className="flex h-14 items-center border-b px-4">
           <span className="text-sm font-semibold">{t("markdown.files")}</span>
-          <Badge variant="secondary" className="ml-auto text-[10px] font-normal">
+          <Badge
+            variant="secondary"
+            className="ml-auto text-[10px] font-normal"
+          >
             {mdFiles.length}
           </Badge>
         </div>
@@ -273,13 +308,20 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
               <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                 {t("markdown.targetLanguage")}
               </label>
-              <Select value={locale} onValueChange={(val) => val && setLocale(val)}>
+              <Select
+                value={locale}
+                onValueChange={(val) => val && setLocale(val)}
+              >
                 <SelectTrigger className="h-8 text-xs w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {TRANSLATION_LANGUAGES.map((lang) => (
-                    <SelectItem key={lang.code} value={lang.code} className="text-xs">
+                    <SelectItem
+                      key={lang.code}
+                      value={lang.code}
+                      className="text-xs"
+                    >
                       {lang.label}
                     </SelectItem>
                   ))}
@@ -319,8 +361,8 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                   <div className="flex items-center gap-2 motion-safe:animate-in motion-safe:fade-in duration-200">
                     {historyView && (
                       <Badge variant="secondary" className="text-[10px]">
-                        {LANGUAGES.find((l) => l.code === historyView.locale)?.label ??
-                          historyView.locale}
+                        {LANGUAGES.find((l) => l.code === historyView.locale)
+                          ?.label ?? historyView.locale}
                       </Badge>
                     )}
                     <div className="flex items-center border bg-muted/50 p-0.5">
@@ -361,7 +403,9 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                     })}
                   >
                     <Download className="size-3.5" />
-                    <span className="hidden sm:inline">{t("common.export")}</span>
+                    <span className="hidden sm:inline">
+                      {t("common.export")}
+                    </span>
                     <ChevronDown className="size-3 opacity-50" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -377,7 +421,10 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                       disabled={!translatedContent}
                       onClick={() => {
                         const name = selectedFile.split("/").pop() ?? "file.md";
-                        handleDownloadFile(translatedContent, `${locale}-${name}`);
+                        handleDownloadFile(
+                          translatedContent,
+                          `${locale}-${name}`,
+                        );
                       }}
                     >
                       {t("markdown.downloadTranslated")}
@@ -416,7 +463,9 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle>{t("markdown.translationHistory")}</SheetTitle>
-                  <SheetDescription>{t("markdown.accessPreviousTranslations")}</SheetDescription>
+                  <SheetDescription>
+                    {t("markdown.accessPreviousTranslations")}
+                  </SheetDescription>
                 </SheetHeader>
                 <div className="mt-6 space-y-4">
                   {repo.markdownTranslations.length === 0 ? (
@@ -425,15 +474,21 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                     </div>
                   ) : (
                     (repo.markdownTranslations as any[]).map((translation) => (
-                      <div key={translation.id} className="border text-sm overflow-hidden">
+                      <div
+                        key={translation.id}
+                        className="border text-sm overflow-hidden"
+                      >
                         <div className="flex items-center justify-between p-3">
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className="font-normal">
-                              {LANGUAGES.find((l) => l.code === translation.locale)?.label ??
-                                translation.locale}
+                              {LANGUAGES.find(
+                                (l) => l.code === translation.locale,
+                              )?.label ?? translation.locale}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(translation.createdAt).toLocaleDateString()}
+                              {new Date(
+                                translation.createdAt,
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                           <Button
@@ -441,7 +496,10 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                             size="sm"
                             className="h-7 px-2"
                             onClick={() =>
-                              handleDownloadZip(translation.files as any[], translation.locale)
+                              handleDownloadZip(
+                                translation.files as any[],
+                                translation.locale,
+                              )
                             }
                           >
                             <Download className="mr-1.5 size-3" />
@@ -449,18 +507,24 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                           </Button>
                         </div>
                         <div className="border-t divide-y">
-                          {(translation.files as TranslatedFile[]).map((file) => (
-                            <button
-                              key={file.path}
-                              onClick={() =>
-                                handleViewHistoryFile(file.path, file.content, translation.locale)
-                              }
-                              className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-150 ease-out"
-                            >
-                              <FileText className="size-3 shrink-0 opacity-50" />
-                              <span className="truncate">{file.path}</span>
-                            </button>
-                          ))}
+                          {(translation.files as TranslatedFile[]).map(
+                            (file) => (
+                              <button
+                                key={file.path}
+                                onClick={() =>
+                                  handleViewHistoryFile(
+                                    file.path,
+                                    file.content,
+                                    translation.locale,
+                                  )
+                                }
+                                className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-150 ease-out"
+                              >
+                                <FileText className="size-3 shrink-0 opacity-50" />
+                                <span className="truncate">{file.path}</span>
+                              </button>
+                            ),
+                          )}
                         </div>
                       </div>
                     ))
@@ -474,9 +538,12 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
         {isTranslating && (
           <div className="flex items-center gap-3 border-b border-neutral-700/50 bg-neutral-900/30 px-6 py-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 duration-200">
             <Loader2 className="size-3.5 animate-spin text-primary" />
-            <span className="text-xs font-medium">{t("common.translating")}</span>
+            <span className="text-xs font-medium">
+              {t("common.translating")}
+            </span>
             <Badge variant="outline" className="text-[10px] font-normal">
-              {TRANSLATION_LANGUAGES.find((l) => l.code === locale)?.label ?? locale}
+              {TRANSLATION_LANGUAGES.find((l) => l.code === locale)?.label ??
+                locale}
             </Badge>
           </div>
         )}
@@ -487,7 +554,9 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
               <div className="bg-muted p-4 border border-border">
                 <FileText className="size-8 opacity-60" />
               </div>
-              <p className="text-sm font-medium">{t("markdown.selectFilePrompt")}</p>
+              <p className="text-sm font-medium">
+                {t("markdown.selectFilePrompt")}
+              </p>
             </div>
           ) : loadingContent ? (
             <div className="flex h-full items-center justify-center motion-safe:animate-in motion-safe:fade-in duration-200">

@@ -3,16 +3,29 @@
 import { use } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, FileText, GitBranch, Languages, MessageSquare, Star } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  GitBranch,
+  Languages,
+  MessageSquare,
+  Star,
+} from "lucide-react";
 
 import { trpc } from "@/utils/trpc";
 import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function RepoDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function RepoDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
-  const { data: repo, isLoading } = useQuery(trpc.repository.getById.queryOptions({ id }));
+  const { data: repo, isLoading } = useQuery(
+    trpc.repository.getById.queryOptions({ id }),
+  );
   const { t } = useUiI18n();
 
   if (isLoading) {
@@ -46,7 +59,9 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
           {repo.owner}/{repo.name}
         </h1>
         {repo.description ? (
-          <p className="mt-1 text-xs text-muted-foreground">{repo.description}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {repo.description}
+          </p>
         ) : null}
         <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
           <Badge
@@ -158,7 +173,9 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
 
       {repo.onboardingDocs.length > 0 ? (
         <section>
-          <h2 className="mb-3 text-sm font-semibold">{t("repoOverview.recentOnboardingDocs")}</h2>
+          <h2 className="mb-3 text-sm font-semibold">
+            {t("repoOverview.recentOnboardingDocs")}
+          </h2>
           <div className="space-y-1.5 stagger-fade-in">
             {repo.onboardingDocs.slice(0, 5).map((doc) => (
               <Link
@@ -174,7 +191,9 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
                     {new Date(doc.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <span className="text-xs text-muted-foreground">{t("common.view")}</span>
+                <span className="text-xs text-muted-foreground">
+                  {t("common.view")}
+                </span>
               </Link>
             ))}
           </div>
