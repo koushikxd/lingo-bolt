@@ -59,7 +59,7 @@
 }
 
 .dark {
-  --background: oklch(0.15 0 0);
+  --background: oklch(0.19 0 0);
   --foreground: oklch(0.94 0 0);
   --card: oklch(0.21 0 0);
   --card-foreground: oklch(0.94 0 0);
@@ -83,7 +83,7 @@
   --chart-3: oklch(0.6693 0.1427 250.8035);
   --chart-4: oklch(0.6762 0.3056 327.4089);
   --chart-5: oklch(0.7195 0.1514 120.9159);
-  --sidebar: oklch(0.15 0 0);
+  --sidebar: #1a1a1a;
   --sidebar-foreground: oklch(0.94 0 0);
   --sidebar-primary: oklch(0.7204 0.1833 52.8311);
   --sidebar-primary-foreground: oklch(0.2319 0.0525 64.0125);
@@ -162,6 +162,45 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@utility stagger-fade-in {
+  & > * {
+    opacity: 0;
+    animation: fade-slide-in 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+  }
+  & > *:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  & > *:nth-child(2) {
+    animation-delay: 50ms;
+  }
+  & > *:nth-child(3) {
+    animation-delay: 100ms;
+  }
+  & > *:nth-child(4) {
+    animation-delay: 150ms;
+  }
+  & > *:nth-child(5) {
+    animation-delay: 200ms;
+  }
+  & > *:nth-child(n + 6) {
+    animation-delay: 250ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-fade-in > * {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 @layer base {

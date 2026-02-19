@@ -55,9 +55,7 @@ export function LanguagePickerDialog({
             <Globe className="size-4" />
             {t("languagePicker.title")}
           </DialogTitle>
-          <DialogDescription>
-            {t("languagePicker.description")}
-          </DialogDescription>
+          <DialogDescription>{t("languagePicker.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid max-h-56 grid-cols-2 gap-1.5 overflow-y-auto py-1">
@@ -67,9 +65,7 @@ export function LanguagePickerDialog({
               type="button"
               onClick={() => setSelected(lang.code)}
               className={`px-3 py-2 text-left text-xs transition-colors cursor-pointer ${
-                selected === lang.code
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
+                selected === lang.code ? "bg-primary text-primary-foreground" : "hover:bg-muted"
               }`}
             >
               {lang.label}
@@ -83,9 +79,7 @@ export function LanguagePickerDialog({
             onClick={() => mutation.mutate({ preferredLanguage: selected })}
             disabled={mutation.isPending}
           >
-            {mutation.isPending
-              ? t("languagePicker.saving")
-              : t("languagePicker.continue")}
+            {mutation.isPending ? t("languagePicker.saving") : t("languagePicker.continue")}
           </Button>
         </DialogFooter>
       </DialogContent>

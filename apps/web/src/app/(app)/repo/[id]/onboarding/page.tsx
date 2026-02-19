@@ -27,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -41,6 +40,39 @@ import {
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 type GenerateState = "idle" | "generating" | "translating" | "done";
+
+function GenerationStatusBar({ state, locale }: { state: GenerateState; locale: string }) {
+  const { t } = useUiI18n();
+  if (state === "idle" || state === "done") return null;
+
+  const langLabel = LANGUAGES.find((l) => l.code === locale)?.label ?? locale;
+
+  return (
+    <div className="flex items-center gap-3 border-b border-neutral-700/50 bg-neutral-900/30 px-8 py-2.5 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 duration-200">
+      <Loader2 className="size-3.5 animate-spin text-primary" />
+      <div className="flex items-center gap-2 text-xs">
+        <span className="font-medium text-foreground">
+          {state === "generating" ? t("common.generating") : t("common.translating")}
+        </span>
+        {state === "translating" && (
+          <Badge variant="outline" className="text-[10px] font-normal">
+            {langLabel}
+          </Badge>
+        )}
+      </div>
+      <div className="ml-auto flex items-center gap-1.5">
+        <div className="flex gap-0.5">
+          <span
+            className={`size-1.5 ${state === "generating" ? "bg-primary" : "bg-primary/30"} transition-colors duration-300`}
+          />
+          <span
+            className={`size-1.5 ${state === "translating" ? "bg-primary" : "bg-primary/30"} transition-colors duration-300`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function OnboardingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -73,7 +105,6 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
 
   const displayContent =
     state !== "idle" ? streamContent : (selectedDoc?.content ?? latestDoc?.content ?? "");
-  const displayLocale = selectedDoc?.locale ?? latestDoc?.locale ?? "en";
   const hasNoDocs = repo && repo.onboardingDocs.length === 0;
 
   const handleRegenerate = useCallback(async () => {
@@ -158,7 +189,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-8 py-8 px-4">
+      <div className="mx-auto max-w-3xl space-y-8 py-8 px-4 motion-safe:animate-in motion-safe:fade-in duration-200">
         <div className="space-y-4">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-4 w-32" />
@@ -174,7 +205,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
 
   if (!repo) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2">
+      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2 motion-safe:animate-in motion-safe:fade-in duration-300">
         <BookOpen className="size-8 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>
       </div>
@@ -182,7 +213,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col bg-background">
+    <div className="flex h-[calc(100vh-4rem)] flex-col bg-background motion-safe:animate-in motion-safe:fade-in duration-200">
       <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b bg-background/95 px-0 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center bg-primary/10 p-1.5">
@@ -264,8 +295,12 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                 <DropdownMenuContent align="end" className="w-64 p-3">
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <h4 className="text-xs font-medium leading-none">{t("onboarding.newVersion")}</h4>
-                      <p className="text-[10px] text-muted-foreground">{t("onboarding.generateFreshGuide")}</p>
+                      <h4 className="text-xs font-medium leading-none">
+                        {t("onboarding.newVersion")}
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        {t("onboarding.generateFreshGuide")}
+                      </p>
                     </div>
                     <div className="space-y-2">
                       <Select
@@ -292,11 +327,13 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
                       >
                         {state === "generating" ? (
                           <>
-                            <Loader2 className="mr-2 size-3 animate-spin" /> {t("common.generating")}
+                            <Loader2 className="mr-2 size-3 animate-spin" />{" "}
+                            {t("common.generating")}
                           </>
                         ) : state === "translating" ? (
                           <>
-                            <Loader2 className="mr-2 size-3 animate-spin" /> {t("common.translating")}
+                            <Loader2 className="mr-2 size-3 animate-spin" />{" "}
+                            {t("common.translating")}
                           </>
                         ) : (
                           <>
@@ -334,10 +371,12 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
         </div>
       </header>
 
+      <GenerationStatusBar state={state} locale={locale} />
+
       <ScrollArea className="flex-1">
         <div className="mx-auto max-w-3xl px-8 py-12">
           {hasNoDocs && state === "idle" ? (
-            <div className="flex flex-col items-center justify-center gap-6 border border-dashed border-border p-16 text-center bg-card/50">
+            <div className="flex flex-col items-center justify-center gap-6 border border-dashed border-border p-16 text-center bg-card/50 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300">
               <div className="bg-muted p-4 border border-border">
                 <Sparkles className="size-6 text-primary" />
               </div>
@@ -364,7 +403,10 @@ export default function OnboardingPage({ params }: { params: Promise<{ id: strin
               </div>
             </div>
           ) : (
-            <article ref={docRef} className={PROSE_CLASSES}>
+            <article
+              ref={docRef}
+              className={`${PROSE_CLASSES} motion-safe:animate-in motion-safe:fade-in duration-300`}
+            >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
             </article>
           )}

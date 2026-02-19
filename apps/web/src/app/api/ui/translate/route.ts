@@ -99,7 +99,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ locale: body.targetLocale, messages });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid request. Provide targetLocale." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid request. Provide targetLocale." },
+        { status: 400 },
+      );
     }
     const message = error instanceof Error ? error.message : "UI translation failed";
     return NextResponse.json({ error: message }, { status: 500 });

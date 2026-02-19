@@ -93,7 +93,8 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
         body: JSON.stringify({ repositoryId: id, filePath: selectedFile }),
       });
       const data = (await res.json()) as { content?: string; error?: string };
-      if (!res.ok || !data.content) throw new Error(data.error ?? t("markdown.toastLoadFileFailed"));
+      if (!res.ok || !data.content)
+        throw new Error(data.error ?? t("markdown.toastLoadFileFailed"));
       return data.content;
     },
     enabled: !!selectedFile,
@@ -114,7 +115,8 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
         translated?: string;
         error?: string;
       };
-      if (!res.ok || !data.translated) throw new Error(data.error ?? t("markdown.toastTranslationFailed"));
+      if (!res.ok || !data.translated)
+        throw new Error(data.error ?? t("markdown.toastTranslationFailed"));
       return data.translated;
     },
     onSuccess: () => {
@@ -137,7 +139,8 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
         files?: TranslatedFile[];
         error?: string;
       };
-      if (!res.ok || !data.files) throw new Error(data.error ?? t("markdown.toastBatchTranslationFailed"));
+      if (!res.ok || !data.files)
+        throw new Error(data.error ?? t("markdown.toastBatchTranslationFailed"));
       return data.files;
     },
     onSuccess: (files) => {
@@ -196,10 +199,11 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
   );
 
   const translatedContent = translateFileMutation.data ?? historyView?.content ?? "";
+  const isTranslating = translateFileMutation.isPending;
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center motion-safe:animate-in motion-safe:fade-in duration-200">
         <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     );
@@ -207,7 +211,7 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
 
   if (!repo) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2">
+      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-2 motion-safe:animate-in motion-safe:fade-in duration-300">
         <FileCode className="size-8 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>
       </div>
@@ -215,8 +219,7 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
-      {/* Sidebar */}
+    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-background motion-safe:animate-in motion-safe:fade-in duration-200">
       <div className="flex w-64 flex-col border-r bg-card/50">
         <div className="flex h-14 items-center border-b px-4">
           <span className="text-sm font-semibold">{t("markdown.files")}</span>
@@ -242,7 +245,7 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                 <Skeleton key={i} className="mb-1 h-7 w-full" />
               ))
             ) : filteredFiles.length === 0 ? (
-              <div className="px-2 py-8 text-center text-xs text-muted-foreground">
+              <div className="px-2 py-8 text-center text-xs text-muted-foreground motion-safe:animate-in motion-safe:fade-in duration-200">
                 {t("markdown.noFilesFound")}
               </div>
             ) : (
@@ -251,7 +254,7 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                   key={f}
                   onClick={() => handleSelectFile(f)}
                   className={cn(
-                    "flex w-full items-center gap-2 px-2 py-1.5 text-left text-xs transition-colors",
+                    "flex w-full items-center gap-2 px-2 py-1.5 text-left text-xs transition-[color,background-color] duration-150 ease-out",
                     selectedFile === f
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -300,7 +303,6 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-1 flex-col min-w-0 bg-background">
         <header className="flex h-14 shrink-0 items-center justify-between border-b px-6">
           <div className="flex items-center gap-4 min-w-0">
@@ -314,17 +316,18 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
             {selectedFile && (
               <>
                 {translatedContent && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 motion-safe:animate-in motion-safe:fade-in duration-200">
                     {historyView && (
                       <Badge variant="secondary" className="text-[10px]">
-                        {LANGUAGES.find((l) => l.code === historyView.locale)?.label ?? historyView.locale}
+                        {LANGUAGES.find((l) => l.code === historyView.locale)?.label ??
+                          historyView.locale}
                       </Badge>
                     )}
                     <div className="flex items-center border bg-muted/50 p-0.5">
                       <button
                         onClick={() => setViewMode("original")}
                         className={cn(
-                          "px-3 py-1 text-xs font-medium transition-all",
+                          "px-3 py-1 text-xs font-medium transition-all duration-150 ease-out",
                           viewMode === "original"
                             ? "bg-background shadow-sm text-foreground"
                             : "text-muted-foreground hover:text-foreground",
@@ -335,7 +338,7 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                       <button
                         onClick={() => setViewMode("translated")}
                         className={cn(
-                          "px-3 py-1 text-xs font-medium transition-all",
+                          "px-3 py-1 text-xs font-medium transition-all duration-150 ease-out",
                           viewMode === "translated"
                             ? "bg-background shadow-sm text-foreground"
                             : "text-muted-foreground hover:text-foreground",
@@ -387,9 +390,9 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                     size="sm"
                     className="h-8 gap-2"
                     onClick={() => translateFileMutation.mutate()}
-                    disabled={translateFileMutation.isPending}
+                    disabled={isTranslating}
                   >
-                    {translateFileMutation.isPending ? (
+                    {isTranslating ? (
                       <Loader2 className="size-3.5 animate-spin" />
                     ) : (
                       <ArrowRightLeft className="size-3.5" />
@@ -426,7 +429,8 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                         <div className="flex items-center justify-between p-3">
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className="font-normal">
-                              {LANGUAGES.find((l) => l.code === translation.locale)?.label ?? translation.locale}
+                              {LANGUAGES.find((l) => l.code === translation.locale)?.label ??
+                                translation.locale}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
                               {new Date(translation.createdAt).toLocaleDateString()}
@@ -451,7 +455,7 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
                               onClick={() =>
                                 handleViewHistoryFile(file.path, file.content, translation.locale)
                               }
-                              className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                              className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-150 ease-out"
                             >
                               <FileText className="size-3 shrink-0 opacity-50" />
                               <span className="truncate">{file.path}</span>
@@ -467,21 +471,31 @@ export default function MarkdownPage({ params }: { params: Promise<{ id: string 
           </div>
         </header>
 
+        {isTranslating && (
+          <div className="flex items-center gap-3 border-b border-neutral-700/50 bg-neutral-900/30 px-6 py-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 duration-200">
+            <Loader2 className="size-3.5 animate-spin text-primary" />
+            <span className="text-xs font-medium">{t("common.translating")}</span>
+            <Badge variant="outline" className="text-[10px] font-normal">
+              {TRANSLATION_LANGUAGES.find((l) => l.code === locale)?.label ?? locale}
+            </Badge>
+          </div>
+        )}
+
         <div className="flex-1 overflow-hidden">
           {!selectedFile ? (
-            <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground motion-safe:animate-in motion-safe:fade-in duration-300">
               <div className="bg-muted p-4 border border-border">
                 <FileText className="size-8 opacity-60" />
               </div>
               <p className="text-sm font-medium">{t("markdown.selectFilePrompt")}</p>
             </div>
           ) : loadingContent ? (
-            <div className="flex h-full items-center justify-center">
+            <div className="flex h-full items-center justify-center motion-safe:animate-in motion-safe:fade-in duration-200">
               <Loader2 className="size-8 animate-spin text-muted-foreground/50" />
             </div>
           ) : (
-            <ScrollArea className="h-full">
-              <div className="mx-auto max-w-3xl px-8 py-10">
+            <ScrollArea className="h-full" key={`${selectedFile}-${viewMode}`}>
+              <div className="mx-auto max-w-3xl px-8 py-10 motion-safe:animate-in motion-safe:fade-in duration-200">
                 <article className={PROSE_CLASSES}>
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {viewMode === "translated" && translatedContent

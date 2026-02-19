@@ -79,31 +79,30 @@ export default function BotDashboardPage() {
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6 pt-6 pb-10">
       <div>
         <h1 className="text-lg font-semibold tracking-tight text-pretty">lingo-bolt</h1>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {t("bot.subtitle")}
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{t("bot.subtitle")}</p>
         <div className="mt-3 flex items-center gap-3">
           <Badge variant="outline" className="text-[10px]">
             {t("bot.githubApp")}
           </Badge>
           {!isLoading && (
             <span className="text-xs text-muted-foreground tabular-nums">
-              {t("bot.installationCount", { count: installCount, suffix: installCount === 1 ? "" : "s" })}
+              {t("bot.installationCount", {
+                count: installCount,
+                suffix: installCount === 1 ? "" : "s",
+              })}
             </span>
           )}
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 stagger-fade-in">
         <div className="flex flex-col justify-between border border-neutral-700 bg-neutral-900 p-4">
           <div>
             <div className="flex items-center gap-2 text-sm font-medium">
               <Bot className="size-4" aria-hidden="true" />
               {t("bot.installations")}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("bot.manageSettings")}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("bot.manageSettings")}</p>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs tabular-nums text-muted-foreground">
@@ -130,9 +129,7 @@ export default function BotDashboardPage() {
               <Languages className="size-4" aria-hidden="true" />
               {t("bot.commands")}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("bot.mentionDescription")}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("bot.mentionDescription")}</p>
           </div>
           <div className="mt-4 space-y-1">
             <code className="block text-[10px] font-mono text-muted-foreground">
@@ -159,13 +156,11 @@ export default function BotDashboardPage() {
           </div>
         </section>
       ) : installCount === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 border border-dashed border-border py-16 text-center">
+        <div className="flex flex-col items-center justify-center gap-3 border border-dashed border-border py-16 text-center motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300">
           <Bot className="size-6 text-muted-foreground" aria-hidden="true" />
           <div className="space-y-1">
             <p className="text-sm font-medium">{t("bot.noInstallationsTitle")}</p>
-            <p className="text-xs text-muted-foreground">
-              {t("bot.noInstallationsSubtitle")}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("bot.noInstallationsSubtitle")}</p>
           </div>
           <a href={GITHUB_APP_INSTALL_URL} target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline" className="mt-1">
@@ -177,7 +172,7 @@ export default function BotDashboardPage() {
       ) : (
         <section>
           <h2 className="mb-3 text-sm font-semibold">{t("bot.installations")}</h2>
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 stagger-fade-in">
             {installations!.map((inst) => (
               <InstallationCard
                 key={inst.id}
@@ -192,24 +187,24 @@ export default function BotDashboardPage() {
 
       <section>
         <h2 className="mb-1 text-sm font-semibold">{t("bot.reference")}</h2>
-        <p className="mb-3 text-[11px] text-muted-foreground">
-          {t("bot.referenceSubtitle")}
-        </p>
-        <div className="space-y-1.5">
+        <p className="mb-3 text-[11px] text-muted-foreground">{t("bot.referenceSubtitle")}</p>
+        <div className="space-y-1.5 stagger-fade-in">
           <div className="border border-neutral-700 bg-neutral-900 px-4 py-3">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="size-3.5 text-muted-foreground" aria-hidden="true" />
               <span className="text-xs font-medium">{t("bot.autoTitle")}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground mb-3 pl-5">
-              {t("bot.autoSubtitle")}
-            </p>
+            <p className="text-[11px] text-muted-foreground mb-3 pl-5">{t("bot.autoSubtitle")}</p>
             <div className="space-y-3 pl-5">
               <div className="flex items-start gap-3">
                 <Tags className="size-3 mt-0.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                 <div>
-                  <span className="text-xs font-medium text-foreground">{t("bot.languageDetection")}</span>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{t("bot.languageDetectionDescription")}</p>
+                  <span className="text-xs font-medium text-foreground">
+                    {t("bot.languageDetection")}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {t("bot.languageDetectionDescription")}
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -218,8 +213,12 @@ export default function BotDashboardPage() {
                   aria-hidden="true"
                 />
                 <div>
-                  <span className="text-xs font-medium text-foreground">{t("bot.autoTranslate")}</span>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{t("bot.autoTranslateDescription")}</p>
+                  <span className="text-xs font-medium text-foreground">
+                    {t("bot.autoTranslate")}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {t("bot.autoTranslateDescription")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -390,7 +389,9 @@ function InstallationCard({
             {installation.accountType}
           </Badge>
         </div>
-        <span className="text-xs text-muted-foreground">{open ? t("bot.close") : t("bot.settings")}</span>
+        <span className="text-xs text-muted-foreground">
+          {open ? t("bot.close") : t("bot.settings")}
+        </span>
       </button>
 
       {open && (

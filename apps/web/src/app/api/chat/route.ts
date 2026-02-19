@@ -2,7 +2,12 @@ import { queryRepository } from "@lingo-dev/api/lib/rag/index";
 import { auth } from "@lingo-dev/auth";
 import prisma from "@lingo-dev/db";
 import { openai } from "@ai-sdk/openai";
-import { type UIMessage, convertToModelMessages, stepCountIs, streamText } from "ai";
+import {
+  type UIMessage,
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+} from "ai";
 import { Octokit } from "@octokit/rest";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -10,7 +15,10 @@ import { z } from "zod";
 
 export const maxDuration = 60;
 
-function buildSystemPrompt(language: string, repo: { owner: string; name: string }) {
+function buildSystemPrompt(
+  language: string,
+  repo: { owner: string; name: string },
+) {
   return `You are a contribution helper for the GitHub repository ${repo.owner}/${repo.name}. You help developers contribute to open-source projects.
 
 Your capabilities:
@@ -52,7 +60,10 @@ export async function POST(req: Request) {
     const repositoryId = body.repositoryId as string;
 
     if (!repositoryId || !messages) {
-      return NextResponse.json({ error: "Missing repositoryId or messages" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing repositoryId or messages" },
+        { status: 400 },
+      );
     }
 
     const [repository, user] = await Promise.all([
@@ -66,12 +77,16 @@ export async function POST(req: Request) {
     ]);
 
     if (!repository) {
-      return NextResponse.json({ error: "Repository not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Repository not found" },
+        { status: 404 },
+      );
     }
 
     const githubToken = await getGitHubToken(reqHeaders);
     const octokit = githubToken ? new Octokit({ auth: githubToken }) : null;
-    const languageLabel = LANGUAGE_MAP[user.preferredLanguage] ?? user.preferredLanguage;
+    const languageLabel =
+      LANGUAGE_MAP[user.preferredLanguage] ?? user.preferredLanguage;
 
     const result = streamText({
       model: openai("gpt-4o-mini"),
@@ -83,15 +98,25 @@ export async function POST(req: Request) {
       stopWhen: stepCountIs(10),
       tools: {
         listIssues: {
-          description: "List issues from the GitHub repository. Can filter by state and labels.",
+          description:
+            "List issues from the GitHub repository. Can filter by state and labels.",
           inputSchema: z.object({
             state: z
               .enum(["open", "closed", "all"])
               .default("open")
               .describe("Filter by issue state"),
-            labels: z.string().optional().describe("Comma-separated label names to filter by"),
+            labels: z
+              .string()
+              .optional()
+              .describe("Comma-separated label names to filter by"),
             page: z.number().int().min(1).default(1).describe("Page number"),
-            perPage: z.number().int().min(1).max(30).default(10).describe("Results per page"),
+            perPage: z
+              .number()
+              .int()
+              .min(1)
+              .max(30)
+              .default(10)
+              .describe("Results per page"),
           }),
           execute: async ({ state, labels, page, perPage }) => {
             if (!octokit) return { error: "GitHub token not available" };
@@ -163,11 +188,21 @@ export async function POST(req: Request) {
         },
 
         listPullRequests: {
-          description: "List pull requests from the GitHub repository. Can filter by state.",
+          description:
+            "List pull requests from the GitHub repository. Can filter by state.",
           inputSchema: z.object({
-            state: z.enum(["open", "closed", "all"]).default("open").describe("Filter by PR state"),
+            state: z
+              .enum(["open", "closed", "all"])
+              .default("open")
+              .describe("Filter by PR state"),
             page: z.number().int().min(1).default(1).describe("Page number"),
-            perPage: z.number().int().min(1).max(30).default(10).describe("Results per page"),
+            perPage: z
+              .number()
+              .int()
+              .min(1)
+              .max(30)
+              .default(10)
+              .describe("Results per page"),
           }),
           execute: async ({ state, page, perPage }) => {
             if (!octokit) return { error: "GitHub token not available" };
@@ -196,7 +231,11 @@ export async function POST(req: Request) {
           description:
             "Get detailed information about a specific pull request including changed files and review comments.",
           inputSchema: z.object({
-            pullNumber: z.number().int().min(1).describe("The pull request number"),
+            pullNumber: z
+              .number()
+              .int()
+              .min(1)
+              .describe("The pull request number"),
           }),
           execute: async ({ pullNumber }) => {
             if (!octokit) return { error: "GitHub token not available" };
@@ -250,7 +289,10 @@ export async function POST(req: Request) {
           description:
             "Search the indexed repository codebase using semantic search (RAG). Use this to find relevant code files and snippets when helping solve issues or answering questions about the code.",
           inputSchema: z.object({
-            query: z.string().min(1).describe("The search query describing what code to find"),
+            query: z
+              .string()
+              .min(1)
+              .describe("The search query describing what code to find"),
             limit: z
               .number()
               .int()
@@ -279,7 +321,8 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Chat request failed";
+    const message =
+      error instanceof Error ? error.message : "Chat request failed";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

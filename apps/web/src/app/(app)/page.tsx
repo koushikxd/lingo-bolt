@@ -66,7 +66,9 @@ export default function DashboardPage() {
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between pt-6">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-pretty">{t("common.repositories")}</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-pretty">
+            {t("common.repositories")}
+          </h1>
           <p className="text-xs text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
         <Link href={"/repo/new" as never} className={buttonVariants({ size: "sm" })}>
@@ -88,7 +90,7 @@ export default function DashboardPage() {
           ))}
         </div>
       ) : !repos || repos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 border border-dashed border-border py-16">
+        <div className="flex flex-col items-center justify-center gap-4 border border-dashed border-border py-16 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300">
           <p className="text-sm text-muted-foreground">{t("dashboard.noReposIndexed")}</p>
           <Link href={"/repo/new" as never} className={buttonVariants({ size: "sm" })}>
             <Plus className="size-3.5" aria-hidden="true" />
@@ -96,7 +98,7 @@ export default function DashboardPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 stagger-fade-in">
           {repos.map((repo) => (
             <ContextMenu key={repo.id}>
               <ContextMenuTrigger>

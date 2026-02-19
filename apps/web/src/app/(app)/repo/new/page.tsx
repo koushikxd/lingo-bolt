@@ -29,7 +29,15 @@ type GitHubRepo = {
 
 const PAGE_SIZE = 10;
 
-function IndexingProgress({ label, step, steps }: { label: string; step: number; steps: string[] }) {
+function IndexingProgress({
+  label,
+  step,
+  steps,
+}: {
+  label: string;
+  step: number;
+  steps: string[];
+}) {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
       <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 flex flex-col items-center justify-center gap-7">
@@ -82,7 +90,9 @@ export default function NewRepoPage() {
 
   redirectRef.current = (repositoryId?: string) => {
     toast.success(t("newRepo.toastIndexSuccess"));
-    queryClient.invalidateQueries({ queryKey: trpc.repository.list.queryOptions().queryKey });
+    queryClient.invalidateQueries({
+      queryKey: trpc.repository.list.queryOptions().queryKey,
+    });
     router.push(`/repo/${repositoryId}` as never);
   };
 
@@ -226,7 +236,7 @@ export default function NewRepoPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("newRepo.searchRepositories")}
-            className="pl-8"
+            className="pl-8 border border-neutral-700"
             aria-label={t("newRepo.searchRepositoriesAria")}
           />
         </div>
@@ -301,7 +311,7 @@ export default function NewRepoPage() {
             placeholder={t("newRepo.manualUrlPlaceholder")}
             autoComplete="off"
             disabled={indexMutation.isPending}
-            className="flex-1"
+            className="flex-1 border border-neutral-600"
           />
           <Button type="submit" disabled={indexMutation.isPending}>
             {indexMutation.isPending ? <Spinner className="size-3.5" /> : t("newRepo.index")}

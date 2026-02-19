@@ -17,7 +17,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-2xl space-y-6 pt-6">
         <div className="space-y-2">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -32,7 +32,11 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   if (!repo) {
-    return <p className="py-12 text-center text-sm text-muted-foreground">{t("common.repositoryNotFound")}</p>;
+    return (
+      <p className="py-12 text-center text-sm text-muted-foreground">
+        {t("common.repositoryNotFound")}
+      </p>
+    );
   }
 
   return (
@@ -68,7 +72,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3 stagger-fade-in">
         <Link
           href={`/repo/${id}/onboarding` as never}
           className="group flex flex-col justify-between border border-neutral-700 bg-neutral-900 p-4 transition-colors duration-150 ease-out hover:bg-muted/50 active:scale-[0.99] motion-safe:transition-[background-color,transform]"
@@ -155,7 +159,7 @@ export default function RepoDetailPage({ params }: { params: Promise<{ id: strin
       {repo.onboardingDocs.length > 0 ? (
         <section>
           <h2 className="mb-3 text-sm font-semibold">{t("repoOverview.recentOnboardingDocs")}</h2>
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 stagger-fade-in">
             {repo.onboardingDocs.slice(0, 5).map((doc) => (
               <Link
                 key={doc.id}

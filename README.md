@@ -1,4 +1,4 @@
-# lingo bolt 
+# lingo bolt
 
 Open source shouldn't have a language barrier. Lingo Bolt is for contributors who want to participate but struggle with the language, and for maintainers who need to manage issues and pull requests from people who don't speak their language.
 

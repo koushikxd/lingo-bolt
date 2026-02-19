@@ -157,8 +157,7 @@ export const UI_MESSAGES_EN = {
     "Translates the issue or PR body into the language you specify.",
   "bot.summarizeCommandDescription":
     "Summarizes the full issue or PR thread in your default language — useful for long discussions.",
-  "bot.summarizeInLanguageDescription":
-    "Same as above, but in a specific language of your choice.",
+  "bot.summarizeInLanguageDescription": "Same as above, but in a specific language of your choice.",
   "bot.customization": "Customization",
   "bot.customizationDescription":
     "Set a default language per installation and override it for individual repos. Auto-translate and auto-label can each be toggled on or off — globally or per repo. Repo-level settings always take priority over the account-level defaults.",
@@ -167,8 +166,7 @@ export const UI_MESSAGES_EN = {
   "bot.defaultLanguage": "Default language",
   "bot.installationAutoTranslateDescription":
     "New issues, PRs, and comments translated automatically",
-  "bot.installationAutoLabelDescription":
-    "Detect language and add labels to new issues and PRs",
+  "bot.installationAutoLabelDescription": "Detect language and add labels to new issues and PRs",
   "bot.perRepoOverrides": "Per-repo overrides",
   "bot.noReposForInstallation": "No repositories found for this installation",
   "bot.repoSettingsUpdated": "Repo settings updated",

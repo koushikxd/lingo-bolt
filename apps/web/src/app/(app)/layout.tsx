@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Bot, ChevronsUpDown, Globe, Languages, LogOut, Plus } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { authClient } from "@/lib/auth-client";
-import { trpc } from "@/utils/trpc";
-import { useUiI18n } from "@/components/ui-i18n-provider";
 import { LanguagePickerDialog } from "@/components/language-picker-dialog";
+import { useUiI18n } from "@/components/ui-i18n-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Breadcrumb,
@@ -26,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -43,14 +42,22 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+import { authClient } from "@/lib/auth-client";
+import { trpc } from "@/utils/trpc";
 
 type BreadcrumbEntry = { label: string; href?: string };
 
 function buildBreadcrumbs(
   pathname: string,
   activeRepo: { owner: string; name: string; id: string } | null | undefined,
-  translate: (key: "common.repositories" | "appShell.indexNew" | "appShell.breadcrumb.onboarding" | "appShell.breadcrumb.markdown" | "appShell.breadcrumb.chat") => string,
+  translate: (
+    key:
+      | "common.repositories"
+      | "appShell.indexNew"
+      | "appShell.breadcrumb.onboarding"
+      | "appShell.breadcrumb.markdown"
+      | "appShell.breadcrumb.chat",
+  ) => string,
 ): BreadcrumbEntry[] {
   const crumbs: BreadcrumbEntry[] = [{ label: translate("common.repositories"), href: "/" }];
 
@@ -200,7 +207,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate text-xs font-medium">{session.user.name}</span>
                       <span className="truncate text-[10px] text-muted-foreground">
-                        {session.user.email}
+                        {session.user.email
+                          ? (() => {
+                              const [local, domain] = session.user.email.split("@");
+                              const half = Math.ceil((local ?? "").length / 1);
+                              return `${"*".repeat(half)}${(local ?? "").slice(half)}@${domain}`;
+                            })()
+                          : ""}
                       </span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" aria-hidden="true" />
@@ -219,7 +232,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate text-xs font-medium">{session.user.name}</span>
                         <span className="truncate text-[10px] text-muted-foreground">
-                          {session.user.email}
+                          {session.user.email
+                            ? (() => {
+                                const [local, domain] = session.user.email.split("@");
+                                const half = Math.ceil((local ?? "").length / 1);
+                                return `${"*".repeat(half)}${(local ?? "").slice(half)}@${domain}`;
+                              })()
+                            : ""}
                         </span>
                       </div>
                     </div>
