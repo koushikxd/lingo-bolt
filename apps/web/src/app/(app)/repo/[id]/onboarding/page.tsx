@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import remarkGfm from "remark-gfm";
@@ -102,6 +102,16 @@ export default function OnboardingPage({
   const [copied, setCopied] = useState(false);
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
   const docRef = useRef<HTMLDivElement>(null);
+
+  const { data: userPreferences } = useQuery(
+    trpc.user.getPreferences.queryOptions(),
+  );
+
+  useEffect(() => {
+    if (userPreferences?.preferredLanguage) {
+      setLocale(userPreferences.preferredLanguage);
+    }
+  }, [userPreferences?.preferredLanguage]);
 
   const noDocsYet = useRef(false);
 

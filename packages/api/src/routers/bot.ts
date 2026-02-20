@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { protectedProcedure, router } from "../index";
 
-async function getGitHubLogins(userId: string): Promise<string[]> {
+export async function getGitHubLogins(userId: string): Promise<string[]> {
   const account = await prisma.account.findFirst({
     where: { userId, providerId: "github" },
   });

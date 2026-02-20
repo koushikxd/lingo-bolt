@@ -1,7 +1,9 @@
 import { queryRepository } from "@lingo-dev/api/lib/rag/index";
 import prisma from "@lingo-dev/db";
+import { env } from "@lingo-dev/env/server";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
+import { LingoDotDevEngine } from "lingo.dev/sdk";
 
 const RAG_QUERIES = [
   "project overview, README, purpose, what this project does, description",
@@ -40,6 +42,7 @@ Only include this section if the codebase has unique patterns, conventions, or a
 export async function generateOnboardingDoc(repositoryId: string) {
   const repository = await prisma.repository.findUnique({
     where: { id: repositoryId },
+    include: { user: true },
   });
 
   if (!repository || repository.chunksIndexed === 0) return;
@@ -94,10 +97,25 @@ Generate the onboarding documentation now.`;
     prompt: userPrompt,
   });
 
+  let finalContent = result.text;
+  const targetLocale = repository.user.preferredLanguage;
+
+  if (targetLocale !== "en") {
+    const engine = new LingoDotDevEngine({ apiKey: env.LINGODOTDEV_API_KEY });
+    try {
+      finalContent = await engine.localizeText(finalContent, {
+        sourceLocale: "en",
+        targetLocale: targetLocale as any,
+      });
+    } catch (e) {
+      console.error("Failed to translate onboarding doc", e);
+    }
+  }
+
   await prisma.onboardingDoc.create({
     data: {
-      content: result.text,
-      locale: "en",
+      content: finalContent,
+      locale: targetLocale,
       repositoryId: repository.id,
     },
   });
