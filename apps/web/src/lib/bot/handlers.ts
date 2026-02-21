@@ -220,8 +220,9 @@ export async function handleIssueComment(
   const settings = await getEffectiveSettings(installationId, `${owner}/${repo}`);
 
   if (command.action === "translate") {
+    const lang = command.language ?? settings?.defaultLanguage ?? "english";
     const contentToTranslate = issueBody || commentBody;
-    await handleTranslate(octokit, owner, repo, issueNumber, contentToTranslate, command.language);
+    await handleTranslate(octokit, owner, repo, issueNumber, contentToTranslate, lang);
   }
 
   if (command.action === "summarize") {

@@ -4,6 +4,14 @@ Open source shouldn't have a language barrier. Lingo Bolt is for contributors wh
 
 Connect your GitHub repos, get AI onboarding docs in any language, translate markdown files, and let the bot handle in-repo translation and summarization — so the language gap stops being a blocker.
 
+## Demo
+
+> **[Watch the full demo on YouTube →](https://youtu.be/DQ8-F-Au6R4)**
+
+[![Demo video](https://img.youtube.com/vi/DQ8-F-Au6R4/maxresdefault.jpg)](https://youtu.be/DQ8-F-Au6R4)
+
+**[Blog Post](https://dev.to/koushikxd/lingo-bolt-removing-the-language-barrier-from-opensource-4a48)** · **[Reddit Post](https://www.reddit.com/r/lingodotdev/comments/1raqdr9/built_lingo_bolt_a_github_bot_plus_web_app_that/)**
+
 ## Features
 
 - **GitHub auth** — sign in with GitHub, import public or private repos

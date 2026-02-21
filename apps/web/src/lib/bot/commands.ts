@@ -1,5 +1,5 @@
 export type BotCommand =
-  | { action: "translate"; language: string }
+  | { action: "translate"; language: string | null }
   | { action: "summarize"; language: string | null };
 
 const BOT_MENTION = "@lingo-bolt";
@@ -14,8 +14,13 @@ export function parseCommand(body: string): BotCommand | null {
     .trim()
     .toLowerCase();
 
-  const translateMatch = after.match(/^translate\s+to\s+(\w[\w\s-]*\w|\w+)/);
-  if (translateMatch) {
+  const translateToMatch = after.match(/^translate\s+to\s+(\w[\w\s-]*\w|\w+)/);
+  if (translateToMatch) {
+    return { action: "translate", language: translateToMatch[1]!.trim() };
+  }
+
+  const translateMatch = after.match(/^translate\s+(\w[\w\s-]*\w|\w+)/);
+  if (translateMatch && translateMatch[1]!.trim() !== "to") {
     return { action: "translate", language: translateMatch[1]!.trim() };
   }
 
@@ -29,7 +34,7 @@ export function parseCommand(body: string): BotCommand | null {
   }
 
   if (after.startsWith("translate")) {
-    return { action: "translate", language: "english" };
+    return { action: "translate", language: null };
   }
 
   return null;
