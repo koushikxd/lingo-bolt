@@ -1,0 +1,27 @@
+{
+  "name": "@lingo-dev/mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "lingo-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc --noEmit",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@octokit/rest": "^22.0.0",
+    "dotenv": "catalog:",
+    "lingo.dev": "^0.131.2",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@lingo-dev/config": "workspace:*",
+    "@types/node": "^22.13.14",
+    "typescript": "catalog:"
+  }
+}

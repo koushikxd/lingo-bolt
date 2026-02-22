@@ -107,6 +107,75 @@ App runs at `http://localhost:3000`.
 
 ---
 
+## 9. MCP server (optional — IDE integration)
+
+The MCP server runs as a remote HTTP endpoint inside the web app at `/api/mcp`. No separate build step needed — it starts automatically with the app.
+
+### Configure your IDE
+
+Make sure the app is running (`pnpm dev`), then add to `.cursor/mcp.json` (or your IDE's MCP config):
+
+```json
+{
+  "mcpServers": {
+    "lingo-bolt": {
+      "type": "remote",
+      "url": "http://localhost:3000/api/mcp"
+    }
+  }
+}
+```
+
+### Available tools
+
+| Tool              | What it does                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| `list_issues`     | List GitHub issues with translated titles                                             |
+| `get_issue`       | Fetch a full issue with comments, translated                                          |
+| `translate_doc`   | Translate any repo file (README, CONTRIBUTING, etc.)                                  |
+| `translate_text`  | Translate arbitrary text between languages                                            |
+| `search_codebase` | Semantic search across an indexed repo's code (repo must be indexed in the dashboard) |
+| `get_onboarding`  | Fetch AI-generated onboarding docs for an indexed repo                                |
+
+### Usage
+
+Open your IDE and ask:
+
+- "Show me open issues for facebook/react in Spanish"
+- "Get issue #42 from vercel/next.js in Hindi"
+- "Translate the README of expressjs/express to Japanese"
+- "Search the codebase of my-org/my-repo for how auth works"
+- "Get onboarding docs for my-org/my-repo in French"
+
+> **Note:** `search_codebase` and `get_onboarding` require the repo to be indexed first via the web dashboard. The other 4 tools work with any public GitHub repo.
+
+### Standalone MCP (stdio, alternative)
+
+If you prefer the stdio-based MCP (auto-detects owner/repo from git remotes, works without the web app running):
+
+```bash
+pnpm --filter @lingo-dev/mcp build
+```
+
+Then in your IDE config:
+
+```json
+{
+  "mcpServers": {
+    "lingo-bolt": {
+      "command": "node",
+      "args": ["<absolute-path-to-repo>/packages/mcp/dist/index.js"],
+      "env": {
+        "LINGODOTDEV_API_KEY": "<your lingo.dev key>",
+        "GITHUB_TOKEN": "<your github token>"
+      }
+    }
+  }
+}
+```
+
+---
+
 ## Useful commands
 
 | Command            | Description                |

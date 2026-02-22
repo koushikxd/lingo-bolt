@@ -179,6 +179,26 @@ export const UI_MESSAGES_EN = {
   "bot.settingsUpdated": "Settings updated",
   "bot.settingsUpdateFailed": "Failed to update settings",
 
+  "dashboard.mcpTitle": "MCP Server",
+  "dashboard.mcpSubtitle":
+    "Use Lingo Bolt tools directly in your IDE — translate issues, docs, search code, and more. Runs locally as part of the web app.",
+  "dashboard.mcpConfigLabel": "Add to your IDE's MCP settings (e.g. .cursor/mcp.json):",
+  "dashboard.mcpToolListIssues": "List issues with titles translated to your language",
+  "dashboard.mcpToolGetIssue": "Fetch a full issue with comments, translated",
+  "dashboard.mcpToolTranslateDoc": "Translate any file (README, CONTRIBUTING, etc.)",
+  "dashboard.mcpToolTranslateText": "Translate arbitrary text between languages",
+  "dashboard.mcpToolSearchCodebase": "Semantic search across an indexed repo's code",
+  "dashboard.mcpToolGetOnboarding": "Fetch AI-generated onboarding docs for a repo",
+  "dashboard.mcpExamples": "Try these prompts",
+  "dashboard.mcpPrompt1": "Show me open issues for facebook/react in Spanish",
+  "dashboard.mcpPrompt2": "Get issue #42 from vercel/next.js in Hindi",
+  "dashboard.mcpPrompt3": "Translate the README of expressjs/express to Japanese",
+  "dashboard.mcpCopied": "Copied!",
+  "dashboard.mcpCopyConfig": "Copy",
+  "dashboard.mcpRequirement":
+    "Requires the web app to be running (pnpm dev). No extra env vars needed in your IDE.",
+  "dashboard.mcpFullSetup": "Full setup guide →",
+
   "login.welcome": "Welcome",
   "login.subtitle": "Sign in with your GitHub account to get started",
   "login.connectingGithub": "Connecting to GitHub...",

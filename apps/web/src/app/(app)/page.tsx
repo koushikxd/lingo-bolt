@@ -4,7 +4,16 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, GitBranch, Plus, Star, Trash2 } from "lucide-react";
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  GitBranch,
+  Plus,
+  Star,
+  Terminal,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { trpc } from "@/utils/trpc";
@@ -41,6 +50,7 @@ export default function DashboardPage() {
     owner: string;
     name: string;
   } | null>(null);
+  const [copied, setCopied] = useState(false);
   const { t } = useUiI18n();
 
   const deleteMutation = useMutation(
@@ -183,6 +193,117 @@ export default function DashboardPage() {
           ))}
         </div>
       )}
+
+      <div className="border border-neutral-700 bg-neutral-900 p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Terminal className="size-4 text-primary" aria-hidden="true" />
+          <h2 className="text-sm font-semibold tracking-tight">
+            {t("dashboard.mcpTitle")}
+          </h2>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {t("dashboard.mcpSubtitle")}
+        </p>
+
+        <div className="space-y-1.5">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Tools
+          </span>
+          <div className="grid gap-1.5 text-xs text-muted-foreground">
+            {([
+              ["list_issues", t("dashboard.mcpToolListIssues")],
+              ["get_issue", t("dashboard.mcpToolGetIssue")],
+              ["translate_doc", t("dashboard.mcpToolTranslateDoc")],
+              ["translate_text", t("dashboard.mcpToolTranslateText")],
+              ["search_codebase", t("dashboard.mcpToolSearchCodebase")],
+              ["get_onboarding", t("dashboard.mcpToolGetOnboarding")],
+            ] as const).map(([tool, desc]) => (
+              <div key={tool} className="flex items-start gap-2">
+                <code className="shrink-0 bg-neutral-800 px-1.5 py-0.5 text-[11px] text-primary">{tool}</code>
+                <span>{desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            {t("dashboard.mcpConfigLabel")}
+          </span>
+          <div className="relative">
+            <pre className="overflow-x-auto bg-neutral-950 border border-neutral-800 p-3 text-[11px] leading-relaxed text-neutral-300">
+{`{
+  "mcpServers": {
+    "lingo-bolt": {
+      "type": "remote",
+      "url": "http://localhost:3000/api/mcp"
+    }
+  }
+}`}
+            </pre>
+            <button
+              type="button"
+              className="absolute top-2 right-2 p-1 text-neutral-500 hover:text-neutral-300 transition-colors"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  JSON.stringify(
+                    {
+                      mcpServers: {
+                        "lingo-bolt": {
+                          type: "remote",
+                          url: "http://localhost:3000/api/mcp",
+                        },
+                      },
+                    },
+                    null,
+                    2,
+                  ),
+                );
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+            >
+              {copied ? (
+                <Check className="size-3.5" />
+              ) : (
+                <Copy className="size-3.5" />
+              )}
+            </button>
+          </div>
+          <p className="text-[11px] text-muted-foreground/70">
+            {t("dashboard.mcpRequirement")}
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            {t("dashboard.mcpExamples")}
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              t("dashboard.mcpPrompt1"),
+              t("dashboard.mcpPrompt2"),
+              t("dashboard.mcpPrompt3"),
+            ].map((prompt) => (
+              <span
+                key={prompt}
+                className="bg-neutral-800 border border-neutral-700 px-2 py-1 text-[11px] text-muted-foreground"
+              >
+                {prompt}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <a
+          href="https://github.com/koushikxd/lingo-bolt/blob/main/SETUP.md#9-mcp-server-optional--ide-integration"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+        >
+          {t("dashboard.mcpFullSetup")}
+        </a>
+      </div>
 
       <AlertDialog
         open={deleteTarget !== null}

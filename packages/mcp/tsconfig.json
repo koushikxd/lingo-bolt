@@ -1,0 +1,11 @@
+{
+  "extends": "@lingo-dev/config/tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"]
+}
