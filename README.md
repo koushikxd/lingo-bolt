@@ -1,4 +1,4 @@
-# lingo bolt
+# Lingo Bolt - Translate, understand and manage any GitHub repo
 
 Open source shouldn't have a language barrier. Lingo Bolt is for contributors who want to participate but struggle with the language, and for maintainers who need to manage issues and pull requests from people who don't speak their language.
 
@@ -75,53 +75,6 @@ packages/env     Shared runtime env validation
 packages/config  Shared TypeScript config
 ```
 
-## Prerequisites
+## Setup
 
-- Node.js
-- PNPM
-- Docker (for local PostgreSQL and Qdrant)
-- GitHub OAuth app credentials
-- OpenAI API key
-- lingo.dev API key
-
-## Environment variables
-
-- `DATABASE_URL`
-- `BETTER_AUTH_SECRET`
-- `BETTER_AUTH_URL`
-- `CORS_ORIGIN`
-- `QDRANT_URL`
-- `QDRANT_API_KEY`
-- `OPENAI_API_KEY`
-- `GITHUB_CLIENT_ID`
-- `GITHUB_CLIENT_SECRET`
-- `GITHUB_TOKEN` (optional)
-- `GITHUB_APP_ID`
-- `GITHUB_WEBHOOK_SECRET`
-- `LINGODOTDEV_API_KEY`
-- `NODE_ENV`
-
-## Local setup
-
-```bash
-pnpm install
-pnpm db:start
-pnpm db:push
-pnpm dev
-```
-
-App runs at `http://localhost:3000`.
-
-## Useful commands
-
-- `pnpm dev` - run all dev tasks
-- `pnpm dev:web` - run only the web app
-- `pnpm build` - build all packages/apps
-- `pnpm check-types` - run TypeScript checks
-- `pnpm check` - run oxlint + oxfmt
-- `pnpm db:start` - start PostgreSQL + Qdrant via Docker
-- `pnpm db:stop` - stop DB containers
-- `pnpm db:down` - stop and remove DB containers
-- `pnpm db:generate` - regenerate Prisma client
-- `pnpm db:migrate` - run Prisma migrations
-- `pnpm db:studio` - open Prisma Studio
+See [SETUP.md](./SETUP.md) for full local setup instructions including GitHub OAuth, GitHub App configuration, ngrok for webhooks, and environment variables.
