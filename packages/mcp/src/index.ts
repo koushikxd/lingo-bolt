@@ -14,7 +14,7 @@ import {
 } from "./tools.js";
 
 const server = new McpServer({
-  name: "lingo-bolt",
+  name: "lang-bolt",
   version: "1.0.0",
 });
 

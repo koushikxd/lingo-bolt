@@ -21,7 +21,7 @@ function getOctokit(): Octokit {
 }
 
 function createServer() {
-  const server = new McpServer({ name: "lingo-bolt", version: "1.0.0" });
+  const server = new McpServer({ name: "lang-bolt", version: "1.0.0" });
 
   server.registerTool(
     "list_issues",

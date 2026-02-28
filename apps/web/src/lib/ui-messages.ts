@@ -138,13 +138,13 @@ export const UI_MESSAGES_EN = {
   "bot.mentionDescription": "Mention the bot in any issue or pull request",
   "bot.noInstallationsTitle": "No installations yet",
   "bot.noInstallationsSubtitle":
-    "Install lingo-bolt on your GitHub account or organization to get started",
+    "Install lang-bolt on your GitHub account or organization to get started",
   "bot.reference": "Reference",
   "bot.referenceSubtitle":
-    "lingo-bolt lives in your GitHub repos and handles translation automatically. Here's everything it can do.",
+    "lang-bolt lives in your GitHub repos and handles translation automatically. Here's everything it can do.",
   "bot.autoTitle": "What it does automatically",
   "bot.autoSubtitle":
-    "Whenever someone opens an issue or pull request, lingo-bolt kicks in on its own — no mention needed.",
+    "Whenever someone opens an issue or pull request, lang-bolt kicks in on its own — no mention needed.",
   "bot.languageDetection": "Language detection",
   "bot.languageDetectionDescription":
     "Detects what language the issue or PR is written in and adds a lang:spanish label so your team knows at a glance.",
@@ -152,7 +152,7 @@ export const UI_MESSAGES_EN = {
   "bot.autoTranslateDescription":
     "If the content isn't already in your default language, the bot posts a translated version as a comment. Works on issues, PRs, and new comments — so your whole team stays in the loop.",
   "bot.commandsSubtitle":
-    "Mention @lingo-bolt in any comment on an issue or PR to trigger a command.",
+    "Mention @lang-bolt in any comment on an issue or PR to trigger a command.",
   "bot.translateCommandDescription":
     "Translates the issue or PR body into the language you specify.",
   "bot.summarizeCommandDescription":

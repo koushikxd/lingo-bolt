@@ -43,7 +43,7 @@ Subscribe to events: `Issues`, `Issue comment`, `Pull request`
 After creating the app:
 - Copy the **App ID**
 - Generate and download the **private key** (`.pem` file)
-- Rename it to `lingo-bolt.private-key.pem` and place it at the **root of the monorepo**
+- Rename it to `lang-bolt.private-key.pem` and place it at the **root of the monorepo**
 - Then update the path in `apps/web/src/lib/github-app.ts` to match the filename
 
 ## 4. Environment variables
@@ -118,7 +118,7 @@ Make sure the app is running (`pnpm dev`), then add to `.cursor/mcp.json` (or yo
 ```json
 {
   "mcpServers": {
-    "lingo-bolt": {
+    "lang-bolt": {
       "type": "remote",
       "url": "http://localhost:3000/api/mcp"
     }
@@ -162,7 +162,7 @@ Then in your IDE config:
 ```json
 {
   "mcpServers": {
-    "lingo-bolt": {
+    "lang-bolt": {
       "command": "node",
       "args": ["<absolute-path-to-repo>/packages/mcp/dist/index.js"],
       "env": {

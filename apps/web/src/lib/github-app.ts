@@ -5,7 +5,7 @@ import { App } from "@octokit/app";
 import { env } from "@lingo-dev/env/server";
 
 const privateKey = fs.readFileSync(
-  path.resolve(process.cwd(), "../../lingo-bolt.2026-02-17.private-key.pem"),
+  path.resolve(process.cwd(), "../../lang-bolt.2026-02-17.private-key.pem"),
   "utf-8",
 );
 

@@ -73,7 +73,7 @@ function buildBreadcrumbs(
   if (pathname === "/") return crumbs;
 
   if (pathname === "/bot") {
-    return [{ label: "lingo-bolt" }];
+    return [{ label: "lang-bolt" }];
   }
 
   if (pathname === "/repo/new") {
@@ -193,7 +193,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     render={<Link href={"/bot" as never} />}
                   >
                     <Bot className="size-3.5" aria-hidden="true" />
-                    <span>lingo-bolt</span>
+                    <span>lang-bolt</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

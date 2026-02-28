@@ -234,7 +234,7 @@ export default function DashboardPage() {
             <pre className="overflow-x-auto bg-neutral-950 border border-neutral-800 p-3 text-[11px] leading-relaxed text-neutral-300">
 {`{
   "mcpServers": {
-    "lingo-bolt": {
+    "lang-bolt": {
       "type": "remote",
       "url": "http://localhost:3000/api/mcp"
     }
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                   JSON.stringify(
                     {
                       mcpServers: {
-                        "lingo-bolt": {
+                        "lang-bolt": {
                           type: "remote",
                           url: "http://localhost:3000/api/mcp",
                         },
@@ -296,7 +296,7 @@ export default function DashboardPage() {
         </div>
 
         <a
-          href="https://github.com/koushikxd/lingo-bolt/blob/main/SETUP.md#9-mcp-server-optional--ide-integration"
+          href="https://github.com/koushikxd/lang-bolt/blob/main/SETUP.md#9-mcp-server-optional--ide-integration"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-xs text-primary hover:underline"

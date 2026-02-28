@@ -2,7 +2,7 @@ export type BotCommand =
   | { action: "translate"; language: string | null }
   | { action: "summarize"; language: string | null };
 
-const BOT_MENTION = "@lingo-bolt";
+const BOT_MENTION = "@lang-bolt";
 
 export function parseCommand(body: string): BotCommand | null {
   const lower = body.toLowerCase();

@@ -53,7 +53,7 @@ const LANGUAGES = [
 ] as const;
 
 const GITHUB_APP_INSTALL_URL =
-  "https://github.com/apps/lingo-bolt/installations/new";
+  "https://github.com/apps/lang-bolt/installations/new";
 
 export default function BotDashboardPage() {
   const queryClient = useQueryClient();
@@ -82,7 +82,7 @@ export default function BotDashboardPage() {
     <div className="motion-safe:animate-in motion-safe:fade-in mx-auto max-w-2xl space-y-6 pt-6 pb-10">
       <div>
         <h1 className="text-lg font-semibold tracking-tight text-pretty">
-          lingo-bolt
+          lang-bolt
         </h1>
         <p className="mt-1 text-xs text-muted-foreground">
           {t("bot.subtitle")}
@@ -152,10 +152,10 @@ export default function BotDashboardPage() {
           </div>
           <div className="mt-4 space-y-1">
             <code className="block text-[10px] font-mono text-muted-foreground">
-              @lingo-bolt translate to spanish
+              @lang-bolt translate to spanish
             </code>
             <code className="block text-[10px] font-mono text-muted-foreground">
-              @lingo-bolt summarize in french
+              @lang-bolt summarize in french
             </code>
           </div>
         </div>
@@ -284,19 +284,19 @@ export default function BotDashboardPage() {
             <div className="space-y-3 pl-5">
               <div>
                 <ReferenceRow
-                  command="@lingo-bolt translate to spanish"
+                  command="@lang-bolt translate to spanish"
                   description={t("bot.translateCommandDescription")}
                 />
               </div>
               <div>
                 <ReferenceRow
-                  command="@lingo-bolt summarize"
+                  command="@lang-bolt summarize"
                   description={t("bot.summarizeCommandDescription")}
                 />
               </div>
               <div>
                 <ReferenceRow
-                  command="@lingo-bolt summarize in french"
+                  command="@lang-bolt summarize in french"
                   description={t("bot.summarizeInLanguageDescription")}
                 />
               </div>
